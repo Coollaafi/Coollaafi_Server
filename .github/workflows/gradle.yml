@@ -58,10 +58,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          port: 22
+          port: ${{ secrets.EC2_PORT }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            sudo docker stop $(docker ps -a -q)
+            sudo docker stop $(sudo docker ps -a -q)
             sudo docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
+            sudo docker rm $(sudo docker ps --filter 'status=exited' -a -q)
             sudo docker image prune -a -f
+          debug: true
