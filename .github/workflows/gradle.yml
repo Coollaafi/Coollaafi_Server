@@ -45,25 +45,23 @@ jobs:
       - name: 5) Build with Gradle
         run: ./gradlew bootJar
 
-      - name: 6) Build docker and push
+      - name: 6) Docker build
         run: |
-          docker login -u ${{secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD}}
-          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REPO }} . 
-          docker push ${{ secrets.DOCKER_REPO }}
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t app .
+          docker tag app ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
 
-      # docker installation sudo apt-get update, sudo DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io
-
-      - name: 7) SSH conn and run docker(deployment)
-        uses: appleboy/ssh-action@v0.1.6
+      - name: 7) Deploy
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            sudo docker stop wot
-            sudo docker rm wot
-            sudo docker image rm ${{ secrets.DOCKER_REPO }}
-            sudo docker pull ${{ secrets.DOCKER_REPO }}
-            docker run -e SPRING_PROFILES_ACTIVE=prod --name wot -p 8080:8080 -d ${{ secrets.DOCKER_REPO }}
-            # 권한문제로 도커실행 안될때 sudo usermod -aG docker $USER
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            sudo docker stop $(docker ps -a -q)
+            sudo docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
+            sudo docker image prune -a -f
