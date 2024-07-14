@@ -13,13 +13,3 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create # 첫 배포 이후 validate 으로 수정
-
-#cloud:
-#  aws:
-#    s3:
-#      bucket: {bucketname}
-#      stack.auto: false
-#      region.static: {region}
-#      credentials:
-#        accessKey: {accesskey}
-#        secretKey: {secretkey}
