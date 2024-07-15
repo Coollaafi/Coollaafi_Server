@@ -22,23 +22,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      #      - name: 2) Convert to prod config
-      #        run: |
-      #          cd ./src/main/resources
-      #          [ -e "application.yml" ] && rm application.yml
-      #          echo "spring:" > application.yml
-      #          echo "  profiles:" >> application.yml
-      #          echo "    active: prod" >> application.yml
-      #
-      #      - name: 3) Set prod.yml
-      #        uses: microsoft/variable-substitution@v1
-      #        with:
-      #          files: ./src/main/resources/application-prod.yml
-      #        env:
-      #          spring.datasource.url: ${{ secrets.DB_URL }}
-      #          spring.datasource.username: ${{ secrets.DB_USER }}
-      #          spring.datasource.password: ${{ secrets.DB_PW }}
-
       - name: 4) Grant permission
         run: chmod +x ./gradlew
 
@@ -58,7 +41,10 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
+          script_stop: true
           script: |
+            echo "Checking SSH connection..."
+            ssh -v ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} -p ${{ secrets.EC2_PORT }} 'echo "SSH connection successful"'
             sudo docker ps
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
