@@ -44,27 +44,8 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script_stop: true
           script: |
-            echo "Stopping existing containers using port 8080..."
-            existing_containers=$(sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}")
-            if [ -n "$existing_containers" ]; then
-              echo "Existing containers: $existing_containers"
-              sudo docker stop $existing_containers
-              stop_status=$?
-              echo "Stop status: $stop_status"
-              sudo docker rm $existing_containers
-              rm_status=$?
-              echo "Remove status: $rm_status"
-              if [ $stop_status -ne 0 ] || [ $rm_status -ne 0 ]; then
-                echo "Failed to stop or remove existing containers."
-                exit 1
-              fi
-            else
-              echo "No containers to stop."
-            fi
-            echo "Pulling latest image..."
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            echo "Running new container..."
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            echo "Pruning unused images..."
+            sudo docker stop server
+            sudo docker run --name server --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker image prune -a -f
           debug: true
