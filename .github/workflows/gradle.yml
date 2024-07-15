@@ -45,9 +45,11 @@ jobs:
           script_stop: true
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            if [ $(sudo docker ps -a -q -f name=wot) ]; then
-              sudo docker stop wot
+            containers=$(sudo lsof -i:8080 -t)
+            if [ -n "$containers" ]; then
+              echo "Found containers using port 8080: $containers"
+              sudo kill -9 $containers
             fi
-            sudo docker run --name wot --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            sudo docker run --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker image prune -a -f
           debug: true
