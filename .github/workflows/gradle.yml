@@ -45,7 +45,7 @@ jobs:
           script_stop: true
           script: |
             echo "Checking SSH connection..."
-            ssh -o StrictHostKeyChecking=no -v ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} -p ${{ secrets.EC2_PORT }} 'echo "SSH connection successful"'
+            ssh -o StrictHostKeyChecking=no -v ${{ secrets.EC2_NAME }}@${{ secrets.EC2_HOST }} -p ${{ secrets.EC2_PORT }} 'echo "SSH connection successful"'
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker stop $(sudo docker ps -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest)
             sudo docker run -d -p 8080:8080 --name app_container ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
