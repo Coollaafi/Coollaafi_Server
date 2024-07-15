@@ -28,25 +28,26 @@ jobs:
       - name: 5) Build with Gradle
         run: ./gradlew bootJar
 
-      - name: 6) Docker build
+      - name: 6) Docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
 
       - name: 7) Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
+          username: ${{ secrets.EC2_NAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script_stop: true
           script: |
             echo "Checking SSH connection..."
-            ssh -v ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} -p ${{ secrets.EC2_PORT }} 'echo "SSH connection successful"'
-            sudo docker ps
+            ssh -v ${{ secrets.EC2_NAME }}@${{ secrets.EC2_HOST }} -p ${{ secrets.EC2_PORT }} 'echo "SSH connection successful"'
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            sudo docker stop $(sudo docker ps -q --filter ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest)
+            sudo docker run -d -p 8080:8080 --name app_container ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker image prune -a -f
           debug: true
