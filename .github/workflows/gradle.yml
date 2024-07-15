@@ -44,8 +44,14 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script_stop: true
           script: |
-            sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}" | grep -q . && sudo docker stop $(sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}") && sudo docker rm $(sudo docker ps -a -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}")
+            echo "Stopping existing containers..."
+            sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}" | grep -q . && sudo docker stop $(sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}") || echo "No containers to stop."
+            echo "Removing stopped containers..."
+            sudo docker ps -a -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}" | grep -q . && sudo docker rm $(sudo docker ps -a -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}") || echo "No containers to remove."
+            echo "Pulling latest image..."
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            echo "Running new container..."
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+            echo "Pruning unused images..."
             sudo docker image prune -a -f
           debug: true
