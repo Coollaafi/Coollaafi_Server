@@ -44,10 +44,14 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script_stop: true
           script: |
-            echo "Stopping existing containers..."
-            sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}" | grep -q . && sudo docker stop $(sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}") || echo "No containers to stop."
-            echo "Removing stopped containers..."
-            sudo docker ps -a -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}" | grep -q . && sudo docker rm $(sudo docker ps -a -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}") || echo "No containers to remove."
+            echo "Stopping existing containers using port 8080..."
+            existing_containers=$(sudo docker ps -q --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}")
+            if [ -n "$existing_containers" ]; then
+              sudo docker stop $existing_containers
+              sudo docker rm $existing_containers
+            else
+              echo "No containers to stop."
+            fi
             echo "Pulling latest image..."
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             echo "Running new container..."
