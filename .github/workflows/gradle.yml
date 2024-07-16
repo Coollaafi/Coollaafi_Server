@@ -52,9 +52,8 @@ jobs:
       - name: 6) Docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
-          docker tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REPO }} .
+          docker push ${{ secrets.DOCKER_REPO }}
 
       - name: 7) Deploy
         uses: appleboy/ssh-action@master
@@ -63,14 +62,10 @@ jobs:
           username: ${{ secrets.EC2_NAME }}
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
-          script_stop: true
           script: |
-            containers=$(sudo docker ps --filter "publish=8080" -q)
-            if [ -n "$containers" ]; then
-              sudo docker stop $containers || true
-              sudo docker rm $containers || true
-            fi
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            sudo docker run --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-            sudo docker image prune -a -f
+            sudo docker stop wot-server
+            sudo docker rm wot-server
+            sudo docker image rm ${{ secrets.DOCKER_REPO }}
+            sudo docker pull ${{ secrets.DOCKER_REPO }}
+            sudo docker run -e SPRING_PROFILES_ACTIVE=prod --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_REPO }}
           debug: true

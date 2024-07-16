@@ -14,6 +14,11 @@ spring:
     hibernate:
       ddl-auto: create # 첫 배포 이후 validate 으로 수정
 
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
 cloud:
   aws:
     s3:
