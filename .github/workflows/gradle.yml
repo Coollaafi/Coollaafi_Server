@@ -61,13 +61,11 @@ jobs:
           port: ${{ secrets.EC2_PORT }}
           script_stop: true
           script: |
+            set -e
             containers=$(sudo docker ps --filter "publish=8080" -q)
             if [ -n "$containers" ]; then
-              echo "Found containers using port 8080: $containers"
               sudo docker stop $containers
               sudo docker rm $containers
-            else
-              echo "No containers using port 8080 found."
             fi
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             sudo docker run --rm -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
