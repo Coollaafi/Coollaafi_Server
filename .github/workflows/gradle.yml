@@ -52,8 +52,8 @@ jobs:
       - name: 6) Docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_REPO }} .
-          docker push ${{ secrets.DOCKER_REPO }}
+          docker build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
 
       - name: 7) Deploy
         uses: appleboy/ssh-action@master
@@ -66,7 +66,7 @@ jobs:
             sudo usermod -aG docker $USER
             sudo docker stop wot-server
             sudo docker rm wot-server
-            sudo docker image rm ${{ secrets.DOCKER_REPO }}
-            sudo docker pull ${{ secrets.DOCKER_REPO }}
-            sudo docker run -e SPRING_PROFILES_ACTIVE=prod --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_REPO }}
+            sudo docker image rm ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            sudo docker run -e SPRING_PROFILES_ACTIVE=prod --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
           debug: true
