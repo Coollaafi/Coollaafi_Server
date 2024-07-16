@@ -63,6 +63,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_PORT }}
           script: |
+            sudo usermod -aG docker $USER
             sudo docker stop wot-server
             sudo docker rm wot-server
             sudo docker image rm ${{ secrets.DOCKER_REPO }}
