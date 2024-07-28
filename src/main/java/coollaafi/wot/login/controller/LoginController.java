@@ -1,6 +1,6 @@
 package coollaafi.wot.login.controller;
 
-import coollaafi.wot.login.service.KakaoService;
+import coollaafi.wot.kakao.KakaoService;
 import coollaafi.wot.login.dto.LoginResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

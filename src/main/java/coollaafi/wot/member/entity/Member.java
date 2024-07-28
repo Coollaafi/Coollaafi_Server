@@ -1,10 +1,7 @@
 package coollaafi.wot.member.entity;
 
 import coollaafi.wot.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,4 +24,7 @@ public class Member extends BaseEntity {
     private String name;
 
     private URL profileimage;
+
+    @Column(unique = true)
+    private String accessToken;
 }
