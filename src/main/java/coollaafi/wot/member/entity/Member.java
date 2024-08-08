@@ -21,6 +21,9 @@ public class Member extends BaseEntity {
     )
     private Long id;
 
+    @Column(unique = true)
+    private Long uid;
+
     private String name;
 
     private URL profileimage;
