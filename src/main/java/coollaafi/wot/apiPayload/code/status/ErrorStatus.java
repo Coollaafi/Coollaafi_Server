@@ -19,6 +19,9 @@ public enum ErrorStatus implements BaseErrorCode {
     //Exception 핸들링 테스트
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "에러 핸들링 테스트"),
 
+    //MEMBER
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "member not found"),
+
     //추가
     ;
 
