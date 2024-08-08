@@ -23,9 +23,6 @@ cloud:
   aws:
     s3:
       bucket: ${S3_BUCKET}
-      path:
-        review: reviews
-        performerProfile: PerformerProfile
     region:
       static: ${S3_REGION}
     stack:
