@@ -1,8 +1,8 @@
-package coollaafi.wot.login.controller;
+package coollaafi.wot.web.login.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import coollaafi.wot.kakao.KakaoService;
-import coollaafi.wot.login.dto.LoginResponseDTO;
+import coollaafi.wot.web.kakao.KakaoService;
+import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

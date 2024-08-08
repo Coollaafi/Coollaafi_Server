@@ -15,10 +15,6 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
-
-    //Exception 핸들링 테스트
-    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "에러 핸들링 테스트"),
-
     //MEMBER
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "member not found"),
 

@@ -1,4 +1,4 @@
-package coollaafi.wot.login.dto;
+package coollaafi.wot.web.login.dto;
 
 
 import coollaafi.wot.jwt.AuthTokens;

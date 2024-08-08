@@ -1,11 +1,11 @@
-package coollaafi.wot.kakao;
+package coollaafi.wot.web.kakao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.jwt.AuthTokens;
 import coollaafi.wot.jwt.AuthTokensGenerator;
-import coollaafi.wot.login.dto.LoginResponseDTO;
+import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.member.handler.MemberHandler;
 import coollaafi.wot.member.repository.MemberRepository;
 import coollaafi.wot.member.entity.Member;
@@ -21,8 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 
 @RequiredArgsConstructor
