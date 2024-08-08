@@ -2,10 +2,11 @@ package coollaafi.wot.kakao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.jwt.AuthTokens;
 import coollaafi.wot.jwt.AuthTokensGenerator;
-import coollaafi.wot.jwt.JwtTokenProvider;
 import coollaafi.wot.login.dto.LoginResponseDTO;
+import coollaafi.wot.member.handler.MemberHandler;
 import coollaafi.wot.member.repository.MemberRepository;
 import coollaafi.wot.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 @RequiredArgsConstructor
@@ -28,7 +32,6 @@ public class KakaoService {
 
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
@@ -44,7 +47,7 @@ public class KakaoService {
         HashMap<String, Object> userInfo = getKakaoUserInfo(accessToken);
 
         // 3. 카카오ID로 회원가입 & 로그인 처리
-        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo);
+        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo, accessToken);
 
         return kakaoUserResponse;
     }
@@ -127,24 +130,137 @@ public class KakaoService {
         }
 
         Long id = jsonNode.get("id").asLong();
+//        String nickname = jsonNode.get("properties").get("nickname").asText();
+//        String profileImageUrl = jsonNode.get("kakao_account")
+//                .get("profile")
+//                .get("thumbnail_image_url").asText();
         System.out.println(id);
+//        System.out.println(nickname);
+//        System.out.println(profileImageUrl);
+
         userInfo.put("id", id);
+//        userInfo.put("nickname", nickname);
+//        userInfo.put("profileImageUrl", profileImageUrl);
 
         return userInfo;
     }
 
     // 3. 카카오ID로 회원가입 & 로그인 처리
-    private LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo) {
+    @Transactional
+    public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken) {
         Long uid = Long.valueOf(userInfo.get("id").toString());
-        Member kakaoUser = memberRepository.findById(uid).orElse(null);
+//        String name = userInfo.get("nickname").toString();
+//        URL profileImageUrl;
+
+//        try {
+//            profileImageUrl = new URL(userInfo.get("profileImageUrl").toString());
+//        } catch (MalformedURLException e) {
+//            logger.error("Invalid URL format for profile image: " + e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+
+        Member kakaoUser = memberRepository.findByUid(uid).orElse(null);
 
         if (kakaoUser == null) {
             kakaoUser = new Member();
-            kakaoUser.setId(uid);
+            kakaoUser.setUid(uid);
+//            kakaoUser.setName(name);
+//            kakaoUser.setProfileimage(profileImageUrl);
+            kakaoUser.setAccessToken(accessToken);
+
+            Member savedMember = memberRepository.save(kakaoUser);
+        }else {
+            // 사용자 정보가 이미 존재하면 액세스 토큰 업데이트
+            kakaoUser.setAccessToken(accessToken);
             memberRepository.save(kakaoUser);
         }
 
         AuthTokens token = authTokensGenerator.generate(uid.toString());
-        return new LoginResponseDTO(uid, token);
+        return new LoginResponseDTO(uid, token, accessToken);
+    }
+
+    //4. 로그아웃
+    public void kakaoDisconnect(String accessToken) throws JsonProcessingException {
+        // HTTP 헤더 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        // HTTP 요청 보내기
+        HttpEntity<String> kakaoLogoutRequest = new HttpEntity<>(headers);
+        RestTemplate rt = new RestTemplate();
+
+        try {
+            ResponseEntity<String> response = rt.exchange(
+                    "https://kapi.kakao.com/v1/user/logout",
+                    HttpMethod.POST,
+                    kakaoLogoutRequest,
+                    String.class
+            );
+
+            // responseBody에 있는 정보를 꺼냄
+            String res = response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(res);
+
+            Long id = jsonNode.get("id").asLong();
+            System.out.println("반환된 id : " + id);
+
+        } catch (HttpClientErrorException e) {
+            // 401 Unauthorized 에러 처리
+            if (e.getStatusCode().value() == 401) {
+                System.out.println("Unauthorized: Invalid or expired token.");
+                System.out.println("Response body: " + e.getResponseBodyAsString());
+            } else {
+                System.out.println("Error: " + e.getStatusCode().value() + " " + e.getStatusText());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //5. 회원 탈퇴
+    public void KaKaoUnlink(String accessToken) throws JsonProcessingException {
+        // HTTP 헤더 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-Type", "application/x-www-form-urlencoded");
+
+        // HTTP 요청 보내기
+        HttpEntity<String> kakaoUnlinkRequest = new HttpEntity<>(headers);
+        RestTemplate rt = new RestTemplate();
+
+        try {
+            ResponseEntity<String> response = rt.exchange(
+                    "https://kapi.kakao.com/v1/user/unlink",
+                    HttpMethod.POST,
+                    kakaoUnlinkRequest,
+                    String.class
+            );
+
+            // responseBody에 있는 정보를 꺼냄
+            String res = response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(res);
+
+            Long id = jsonNode.get("id").asLong();
+            System.out.println("반환된 id : " + id);
+
+            Member member = memberRepository.findByUid(id)
+                    .orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+            memberRepository.delete(member);
+
+        } catch (HttpClientErrorException e) {
+            // 401 Unauthorized 에러 처리
+            if (e.getStatusCode().value() == 401) {
+                System.out.println("Unauthorized: Invalid or expired token.");
+                System.out.println("Response body: " + e.getResponseBodyAsString());
+            } else {
+                System.out.println("Error: " + e.getStatusCode().value() + " " + e.getStatusText());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
