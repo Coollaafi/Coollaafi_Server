@@ -1,6 +1,6 @@
-package coollaafi.wot.member.repository;
+package coollaafi.wot.web.member.repository;
 
-import coollaafi.wot.member.entity.Member;
+import coollaafi.wot.web.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package coollaafi.wot.member.entity;
+package coollaafi.wot.web.member.entity;
 
 import coollaafi.wot.common.BaseEntity;
 import jakarta.persistence.*;

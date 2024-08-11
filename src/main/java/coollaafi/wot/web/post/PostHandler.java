@@ -1,10 +1,10 @@
-package coollaafi.wot.web.member.handler;
+package coollaafi.wot.web.post;
 
 import coollaafi.wot.apiPayload.code.BaseErrorCode;
 import coollaafi.wot.apiPayload.exception.GeneralException;
 
-public class MemberHandler extends GeneralException {
-    public MemberHandler(BaseErrorCode errorCode) {
+public class PostHandler extends GeneralException {
+    public PostHandler(BaseErrorCode errorCode) {
         super(errorCode);
     }
 }
