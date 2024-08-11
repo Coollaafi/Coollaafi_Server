@@ -1,5 +1,6 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.web.ai.AIService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class PostService {
     @Transactional
     public PostResponseDTO.PostCreateResultDTO createPost(PostRequestDTO.PostCreateRequestDTO requestDTO) {
         Post post = postRepository.findById(requestDTO.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid post ID"));
+                .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
         post.setDescription(requestDTO.getDescription());
         post.setPostCondition(requestDTO.getPostCondition());
         Post savedPost = postRepository.save(post);

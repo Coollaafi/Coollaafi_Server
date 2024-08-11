@@ -11,13 +11,6 @@ public class PostConverter {
                 .build();
     }
 
-    public Post addInfoEntity(PostRequestDTO.PostCreateRequestDTO requestDTO) {
-        return Post.builder()
-                .description(requestDTO.getDescription())
-                .postCondition(requestDTO.getPostCondition())
-                .build();
-    }
-
     public PostResponseDTO.PostCreateLookBookResultDTO toCreateOotdResultDTO(Post post) {
         return PostResponseDTO.PostCreateLookBookResultDTO.builder()
                 .lookbookImage(post.getLookbookImage())
