@@ -13,16 +13,6 @@ public class PostRequestDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostCreateLookBookRequestDTO{
-        @NotNull
-        private Long memberId;
-        private URL ootdImage;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class PostCreateRequestDTO{
         @NotNull
         private Long postId;
