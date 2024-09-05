@@ -128,17 +128,9 @@ public class KakaoService {
         }
 
         Long id = jsonNode.get("id").asLong();
-//        String nickname = jsonNode.get("properties").get("nickname").asText();
-//        String profileImageUrl = jsonNode.get("kakao_account")
-//                .get("profile")
-//                .get("thumbnail_image_url").asText();
         System.out.println(id);
-//        System.out.println(nickname);
-//        System.out.println(profileImageUrl);
 
         userInfo.put("id", id);
-//        userInfo.put("nickname", nickname);
-//        userInfo.put("profileImageUrl", profileImageUrl);
 
         return userInfo;
     }
@@ -147,23 +139,12 @@ public class KakaoService {
     @Transactional
     public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken) {
         Long uid = Long.valueOf(userInfo.get("id").toString());
-//        String name = userInfo.get("nickname").toString();
-//        URL profileImageUrl;
-
-//        try {
-//            profileImageUrl = new URL(userInfo.get("profileImageUrl").toString());
-//        } catch (MalformedURLException e) {
-//            logger.error("Invalid URL format for profile image: " + e.getMessage());
-//            throw new RuntimeException(e);
-//        }
 
         Member kakaoUser = memberRepository.findByUid(uid).orElse(null);
 
         if (kakaoUser == null) {
             kakaoUser = new Member();
             kakaoUser.setUid(uid);
-//            kakaoUser.setName(name);
-//            kakaoUser.setProfileimage(profileImageUrl);
             kakaoUser.setAccessToken(accessToken);
 
             Member savedMember = memberRepository.save(kakaoUser);
@@ -175,6 +156,13 @@ public class KakaoService {
 
         AuthTokens token = authTokensGenerator.generate(uid.toString());
         return new LoginResponseDTO(uid, token, accessToken);
+    }
+
+    public String getAccessToken(Long uid){
+        Member member= memberRepository.findByUid(uid)
+                .orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        System.out.println(member.getAccessToken());
+        return member.getAccessToken();
     }
 
     //4. 로그아웃
