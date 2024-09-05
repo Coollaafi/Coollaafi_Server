@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class S3Controller {
     private final S3Service s3Service;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public URL uploadFile(@RequestParam("file") MultipartFile file) {
         return s3Service.uploadFile(file);
     }
 

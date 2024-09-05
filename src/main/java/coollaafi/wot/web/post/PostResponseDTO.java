@@ -14,8 +14,10 @@ public class PostResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostCreateLookBookResultDTO{
+        private Long postId;
         private URL ootdImage;
         private URL lookbookImage;
+        private LocalDateTime createdAt;
     }
 
     @Builder
@@ -23,7 +25,11 @@ public class PostResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostCreateResultDTO{
-        Long postId;
-        LocalDateTime createdAt;
+        private Long postId;
+        private URL ootdImage;
+        private URL lookbookImage;
+        private String description;
+        private PostCondition postCondition;
+        private LocalDateTime createdAt;
     }
 }

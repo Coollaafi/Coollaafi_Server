@@ -30,20 +30,19 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public URL uploadFile(@RequestParam("file") MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
         try {
-            String fileName = file.getOriginalFilename();
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
-            metadata.setContentLength(file.getSize());
             amazonS3.putObject(bucket, fileName, file.getInputStream(), metadata);
-
-            URL fileUrl = generatePresignedUrl(fileName);
-            return ResponseEntity.ok(fileUrl.toString());
         } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            throw new RuntimeException(e);
         }
+
+        URL fileUrl = generatePresignedUrl(fileName);
+        return fileUrl;
     }
 
     public List<String> uploadMultipleFiles(@RequestParam("files") List<MultipartFile> files) throws IOException {
