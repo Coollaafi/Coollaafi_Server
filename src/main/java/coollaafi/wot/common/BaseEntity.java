@@ -15,17 +15,17 @@ import jakarta.persistence.Column;
 public abstract class BaseEntity {
 	@CreatedDate
 	@Column(updatable = false, nullable = false)
-	private LocalDateTime created_at;
+	private LocalDateTime createdAt;
 
 	@LastModifiedDate
 	@Column(nullable = false)
-	private LocalDateTime updated_at;
+	private LocalDateTime updatedAt;
 
 	public LocalDateTime getCreatedAt() {
-		return created_at;
+		return createdAt;
 	}
 
 	public LocalDateTime getUpdatedAt() {
-		return updated_at;
+		return updatedAt;
 	}
 }
