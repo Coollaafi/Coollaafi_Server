@@ -13,9 +13,6 @@ import java.net.URL;
 @AllArgsConstructor
 public class MemberResponseDTO {
     Long memberId;
-    Long performerId;
-    Long spaceUserId;
-    Long audienceId;
     URL profile_url;
     String name;
 }

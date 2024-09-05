@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 public class LoginController {
@@ -23,7 +22,8 @@ public class LoginController {
     public LoginController(KakaoService kakaoService, MemberQueryService memberQueryService) {
         this.kakaoService = kakaoService;
         this.memberQueryService = memberQueryService;
-    };
+    }
+
     @Value("${security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
@@ -42,7 +42,7 @@ public class LoginController {
     }
 
     @GetMapping("/login/oauth2/code/kakao")
-    public LoginResponseDTO kakao(@RequestParam("code") String code, HttpSession session) {
+    public LoginResponseDTO kakao(@RequestParam("code") String code) {
         return kakaoService.kakaoLogin(code, redirectUri);
     }
 
