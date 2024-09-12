@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class FriendRequestService {
-    private MemberRepository memberRepository;
-    private FriendRequestRepository friendRequestRepository;
-    private FriendRequestConverter friendRequestConverter;
+    private final MemberRepository memberRepository;
+    private final FriendRequestRepository friendRequestRepository;
+    private final FriendRequestConverter friendRequestConverter;
 
     @Transactional
     public FriendRequestDTO.responseDTO sendFriendRequest(Long senderId, Long receiverId){
