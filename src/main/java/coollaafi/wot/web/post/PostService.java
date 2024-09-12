@@ -4,6 +4,7 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 //import coollaafi.wot.web.ai.AIService;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.ai.AIService;
+import coollaafi.wot.web.friendship.FriendshipRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,6 +26,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final AIService aiService;
     private final AmazonS3Manager amazonS3Manager;
+    private final FriendshipRepository friendshipRepository;
 
     @Transactional
     public PostResponseDTO.PostCreateLookBookResultDTO createPostLookbook(Long memberId, MultipartFile ootdImage) {
@@ -46,5 +50,21 @@ public class PostService {
         post.setPostCondition(requestDTO.getPostCondition());
         Post savedPost = postRepository.save(post);
         return postConverter.toCreateResultDTO(savedPost);
+    }
+
+    @Transactional
+    public List<PostResponseDTO.PostGetResultDTO> getPost(Long memberId) {
+        // 멤버를 찾고, 친구 목록을 가져오기
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
+        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
+
+        // 현재 시점에서 일주일 전 시간
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        // 친구들의 일주일 이내 게시글 조회
+        List<Post> postList = postRepository.findAllByFriendsAndDate(friends, oneWeekAgo);
+
+        return postConverter.toGetResultDTO(postList, member);
     }
 }

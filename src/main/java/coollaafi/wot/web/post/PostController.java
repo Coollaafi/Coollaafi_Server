@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
@@ -41,6 +43,16 @@ public class PostController {
     })
     public ApiResponse<PostResponseDTO.PostCreateResultDTO> createPost(@Valid @RequestBody PostRequestDTO.PostCreateRequestDTO requestDTO) {
         PostResponseDTO.PostCreateResultDTO responseDTO = postService.createPost(requestDTO);
+        return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("/{memberId}")
+    @Operation(summary = "게시글 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<List<PostResponseDTO.PostGetResultDTO>> getPost(@Valid @PathVariable Long memberId) {
+        List<PostResponseDTO.PostGetResultDTO> responseDTO = postService.getPost(memberId);
         return ApiResponse.onSuccess(responseDTO);
     }
 }

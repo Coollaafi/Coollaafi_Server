@@ -30,9 +30,4 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostPrefer> postPrefers;
-
-    // 특정 member가 이 post를 볼 수 있는지 확인
-    public boolean isVisibleTo(Member member){
-        return this.member.getFriends().contains(member) || this.member.equals(member);
-    }
 }

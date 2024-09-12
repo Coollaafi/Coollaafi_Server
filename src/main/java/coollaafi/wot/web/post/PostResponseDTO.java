@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 
 public class PostResponseDTO {
@@ -30,5 +31,22 @@ public class PostResponseDTO {
         private String description;
         private PostCondition postCondition;
         private LocalDateTime createdAt;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostGetResultDTO{
+        private String memberName;
+        private URL memberImage;
+        private Long postId;
+        private String ootdImage;
+        private String lookbookImage;
+        private String description;
+        private PostCondition postCondition;
+        private LocalDateTime createdAt;
+        private Long preferCount;
+        private boolean isLikedByMember;
     }
 }
