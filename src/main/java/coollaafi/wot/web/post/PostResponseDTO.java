@@ -15,8 +15,8 @@ public class PostResponseDTO {
     @AllArgsConstructor
     public static class PostCreateLookBookResultDTO{
         private Long postId;
-        private URL ootdImage;
-        private URL lookbookImage;
+        private String ootdImage;
+        private String lookbookImage;
         private LocalDateTime createdAt;
     }
 
@@ -26,10 +26,27 @@ public class PostResponseDTO {
     @AllArgsConstructor
     public static class PostCreateResultDTO{
         private Long postId;
-        private URL ootdImage;
-        private URL lookbookImage;
+        private String ootdImage;
+        private String lookbookImage;
         private String description;
         private PostCondition postCondition;
         private LocalDateTime createdAt;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostGetResultDTO{
+        private String memberName;
+        private URL memberImage;
+        private Long postId;
+        private String ootdImage;
+        private String lookbookImage;
+        private String description;
+        private PostCondition postCondition;
+        private LocalDateTime createdAt;
+        private Long preferCount;
+        private boolean isLikedByMember;
     }
 }
