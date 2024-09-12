@@ -6,7 +6,6 @@ import coollaafi.wot.web.postPrefer.PostPrefer;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.net.URL;
 import java.util.List;
 
 @Entity
@@ -24,8 +23,8 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private URL ootdImage;
-    private URL lookbookImage;
+    private String ootdImage;
+    private String lookbookImage;
     private String description;
     private PostCondition postCondition;
 

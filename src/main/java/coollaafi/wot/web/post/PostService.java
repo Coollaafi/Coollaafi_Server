@@ -2,7 +2,7 @@ package coollaafi.wot.web.post;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 //import coollaafi.wot.web.ai.AIService;
-import coollaafi.wot.s3.S3Service;
+import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.ai.AIService;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,16 +21,17 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostConverter postConverter;
     private final MemberRepository memberRepository;
-    private final S3Service s3Service;
     private final AIService aiService;
+    private final AmazonS3Manager amazonS3Manager;
 
     @Transactional
     public PostResponseDTO.PostCreateLookBookResultDTO createPostLookbook(Long memberId, MultipartFile ootdImage) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        URL ootdImageUrl = s3Service.uploadFile(ootdImage);
-        URL lookbookImageUrl = aiService.generateLookBookImage(ootdImageUrl);
+        String ootdImageUrl = amazonS3Manager.uploadFile("postOotd/" + UUID.randomUUID().toString(), ootdImage);
+        MultipartFile lookbookImage = aiService.generateLookBookImage(ootdImage);
+        String lookbookImageUrl = amazonS3Manager.uploadFile("postLookbook/" + UUID.randomUUID().toString(), lookbookImage);
 
         Post post = postConverter.toEntity(ootdImageUrl, lookbookImageUrl, member);
         Post savedPost = postRepository.save(post);

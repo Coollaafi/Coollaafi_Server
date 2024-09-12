@@ -3,11 +3,9 @@ package coollaafi.wot.web.post;
 import coollaafi.wot.web.member.entity.Member;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
-
 @Component
 public class PostConverter {
-    public Post toEntity(URL ootdImage, URL lookbookImage, Member member) {
+    public Post toEntity(String ootdImage, String lookbookImage, Member member) {
         return Post.builder()
                 .member(member)
                 .ootdImage(ootdImage)
@@ -17,8 +15,10 @@ public class PostConverter {
 
     public PostResponseDTO.PostCreateLookBookResultDTO toCreateOotdResultDTO(Post post) {
         return PostResponseDTO.PostCreateLookBookResultDTO.builder()
+                .postId(post.getId())
                 .lookbookImage(post.getLookbookImage())
                 .ootdImage(post.getOotdImage())
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 

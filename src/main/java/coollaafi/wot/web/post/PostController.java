@@ -1,7 +1,6 @@
 package coollaafi.wot.web.post;
 
 import coollaafi.wot.apiPayload.ApiResponse;
-import coollaafi.wot.s3.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -18,16 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
-    private final S3Service s3Service;
 
     @PostMapping(value = "/lookbook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "게시글 작성 API - lookbook 이미지 생성", description = "게시글을 처음 작성할 때 필요한 API입니다. 입력 받은 ootd 이미지를 ai로 넘겨 lookbook 이미지를 생성해 저장합니다.")
-//    @Parameter(
-//            in = ParameterIn.HEADER,
-//            name = "Authorization", required = true,
-//            schema = @Schema(type = "string"),
-//            description = "Bearer [Access 토큰]"
-//    )
+    @Parameter(
+            in = ParameterIn.HEADER,
+            name = "Authorization", required = true,
+            schema = @Schema(type = "string"),
+            description = "Bearer [Access 토큰]"
+    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
