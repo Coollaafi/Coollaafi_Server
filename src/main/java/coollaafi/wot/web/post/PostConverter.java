@@ -1,19 +1,21 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.web.comment.CommentRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.postPrefer.PostPreferRepository;
+import coollaafi.wot.web.reply.ReplyRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class PostConverter {
     private final PostPreferRepository postPreferRepository;
-
-    public PostConverter(PostPreferRepository postPreferRepository) {
-        this.postPreferRepository = postPreferRepository;
-    }
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
     public Post toEntity(String ootdImage, String lookbookImage, Member member) {
         return Post.builder()
@@ -54,8 +56,9 @@ public class PostConverter {
                         post.getDescription(),
                         post.getPostCondition(),
                         post.getCreatedAt(),
-                        postPreferRepository.countByPost(post),
-                        postPreferRepository.existsByPostAndMember(post, member)))  // prefer 개수
+                        postPreferRepository.countByPost(post), // prefer 개수
+                        postPreferRepository.existsByPostAndMember(post, member),
+                        commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post)))
                 .collect(Collectors.toList());
     }
 }

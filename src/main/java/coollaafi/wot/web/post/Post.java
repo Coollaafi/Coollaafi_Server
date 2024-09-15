@@ -1,7 +1,9 @@
 package coollaafi.wot.web.post;
 
 import coollaafi.wot.common.BaseEntity;
+import coollaafi.wot.web.comment.Comment;
 import coollaafi.wot.web.member.entity.Member;
+import coollaafi.wot.web.reply.Reply;
 import coollaafi.wot.web.postPrefer.PostPrefer;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,4 +32,7 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostPrefer> postPrefers;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }
