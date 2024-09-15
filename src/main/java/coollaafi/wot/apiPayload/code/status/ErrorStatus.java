@@ -29,7 +29,10 @@ public enum ErrorStatus implements BaseErrorCode {
     //FRIENDS
     FRIEND_REQUEST_ALREADY_EXIST(HttpStatus.NOT_FOUND, "FRIEND001", "이미 존재하는 친구 요청입니다."),
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND002", "존재하지 않는 친구 요청입니다."),
-    FRIEND_REQUEST_ALREADY_PROCESSED(HttpStatus.NOT_FOUND, "FRIEND002", "이미 완료된 친구 요청입니다.")
+    FRIEND_REQUEST_ALREADY_PROCESSED(HttpStatus.NOT_FOUND, "FRIEND002", "이미 완료된 친구 요청입니다."),
+
+    //COMMENT
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT001", "존재하지 않는 댓글입니다."),
 
 
     //추가
