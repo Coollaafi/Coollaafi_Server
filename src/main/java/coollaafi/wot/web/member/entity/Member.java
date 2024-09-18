@@ -4,6 +4,7 @@ import coollaafi.wot.common.BaseEntity;
 import coollaafi.wot.web.comment.Comment;
 import coollaafi.wot.web.friendRequest.FriendRequest;
 import coollaafi.wot.web.friendship.Friendship;
+import coollaafi.wot.web.photo.Photo;
 import coollaafi.wot.web.reply.Reply;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.postPrefer.PostPrefer;
@@ -36,7 +37,9 @@ public class Member extends BaseEntity {
 
     private String name;
 
-    private URL profileimage;
+    private String profileimage;
+
+
 
     @Column(unique = true)
     private String accessToken;
@@ -64,6 +67,10 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member2", cascade = CascadeType.ALL)
     private List<Friendship> friendships2;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Photo> photos;
+
 
     public Set<Member> getFriends(){
         return Stream.concat(
