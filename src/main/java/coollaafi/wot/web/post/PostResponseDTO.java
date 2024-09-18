@@ -1,5 +1,6 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.web.member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,17 +49,6 @@ public class PostResponseDTO {
     public static class PostAddDTO{
         private String description;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MemberDTO{
-        private String memberName;
-        private String memberImage;
-        private String alias;
-    }
-
 
     @Builder
     @Getter

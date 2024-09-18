@@ -1,6 +1,7 @@
 package coollaafi.wot.web.post;
 
 import coollaafi.wot.web.comment.CommentRepository;
+import coollaafi.wot.web.member.MemberDTO;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.postPrefer.PostPreferRepository;
 import coollaafi.wot.web.reply.ReplyRepository;
@@ -32,8 +33,8 @@ public class PostConverter {
                 .build();
     }
 
-    public PostResponseDTO.MemberDTO toMemberDTO(Member member){
-        return PostResponseDTO.MemberDTO.builder()
+    public MemberDTO toMemberDTO(Member member){
+        return MemberDTO.builder()
                 .memberName(member.getName())
                 .memberImage(member.getProfileimage())
                 .build();
