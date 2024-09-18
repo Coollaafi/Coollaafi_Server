@@ -2,9 +2,6 @@ package coollaafi.wot.web.post;
 
 import coollaafi.wot.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,28 +19,32 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(value = "/lookbook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "게시글 작성 API - lookbook 이미지 생성", description = "게시글을 처음 작성할 때 필요한 API입니다. 입력 받은 ootd 이미지를 ai로 넘겨 lookbook 이미지를 생성해 저장합니다.")
-    @Parameter(
-            in = ParameterIn.HEADER,
-            name = "Authorization", required = true,
-            schema = @Schema(type = "string"),
-            description = "Bearer [Access 토큰]"
-    )
+    @Operation(summary = "게시글 작성 API - lookbook 이미지 생성", description = "게시글을 작성시 룩북 이미지를 생성할 때 필요한 API입니다. 입력 받은 ootd 이미지를 ai로 넘겨 lookbook 이미지를 생성해 저장합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<PostResponseDTO.PostCreateLookBookResultDTO> createLookBookPost(@Valid @RequestParam Long memberId, @RequestParam("ootdImage") MultipartFile ootdImage) {
-        PostResponseDTO.PostCreateLookBookResultDTO responseDTO = postService.createPostLookbook(memberId, ootdImage);
+    public ApiResponse<PostResponseDTO.LookbookDTO> createLookBookPost(@Valid @RequestParam Long memberId, @RequestParam("ootdImage") MultipartFile ootdImage) throws IOException {
+        PostResponseDTO.LookbookDTO responseDTO = postService.createLookbook(memberId, ootdImage);
         return ApiResponse.onSuccess(responseDTO);
     }
 
-    @PostMapping("/")
-    @Operation(summary = "게시글 작성 API", description = "게시글 두번째 단계에서 필요한 API입니다.")
+    @PostMapping(value = "/first", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "게시글 작성 API - 중간저장", description = "게시글을 작성시 룩북 생성 이후 다음으로 넘어갈 때 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<PostResponseDTO.PostCreateResultDTO> createPost(@Valid @RequestBody PostRequestDTO.PostCreateRequestDTO requestDTO) {
-        PostResponseDTO.PostCreateResultDTO responseDTO = postService.createPost(requestDTO);
+    public ApiResponse<PostResponseDTO.PostCreateDTO> createLookBookPost(@Valid @RequestParam Long memberId, String ootd, String lookbook) {
+        PostResponseDTO.PostCreateDTO responseDTO = postService.firstCreatePost(memberId, ootd, lookbook);
+        return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @PostMapping("/second")
+    @Operation(summary = "게시글 작성 API - 최종 저장", description = "게시글 두번째 단계에서 필요한 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<PostResponseDTO.PostCreateDTO> createPost(@Valid @RequestBody PostRequestDTO.PostCreateRequestDTO requestDTO) {
+        PostResponseDTO.PostCreateDTO responseDTO = postService.createPost(requestDTO);
         return ApiResponse.onSuccess(responseDTO);
     }
 
@@ -51,8 +53,18 @@ public class PostController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<List<PostResponseDTO.PostGetResultDTO>> getPost(@Valid @PathVariable Long memberId) {
-        List<PostResponseDTO.PostGetResultDTO> responseDTO = postService.getPost(memberId);
+    public ApiResponse<List<PostResponseDTO.AllPostGetDTO>> getAllPost(@Valid @PathVariable Long memberId) {
+        List<PostResponseDTO.AllPostGetDTO> responseDTO = postService.getAllPost(memberId);
+        return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("/{postId}")
+    @Operation(summary = "게시글 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<PostResponseDTO.OnePostGetDTO> getPost(@Valid @RequestParam Long memberId, @Valid @PathVariable Long postId) {
+        PostResponseDTO.OnePostGetDTO responseDTO = postService.getPost(postId, memberId);
         return ApiResponse.onSuccess(responseDTO);
     }
 }

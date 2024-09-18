@@ -25,40 +25,53 @@ public class PostConverter {
                 .build();
     }
 
-    public PostResponseDTO.PostCreateLookBookResultDTO toCreateOotdResultDTO(Post post) {
-        return PostResponseDTO.PostCreateLookBookResultDTO.builder()
+    public PostResponseDTO.PostCreateDTO toPostCreateDTO(Post post) {
+        return PostResponseDTO.PostCreateDTO.builder()
                 .postId(post.getId())
-                .lookbookImage(post.getLookbookImage())
-                .ootdImage(post.getOotdImage())
                 .createdAt(post.getCreatedAt())
                 .build();
     }
 
-    public PostResponseDTO.PostCreateResultDTO toCreateResultDTO(Post post) {
-        return PostResponseDTO.PostCreateResultDTO.builder()
+    public PostResponseDTO.MemberDTO toMemberDTO(Member member){
+        return PostResponseDTO.MemberDTO.builder()
+                .memberName(member.getName())
+                .memberImage(member.getProfileimage())
+                .build();
+    }
+
+    public PostResponseDTO.PostDTO toPostDTO(Post post, Member member){
+        return PostResponseDTO.PostDTO.builder()
                 .postId(post.getId())
-                .lookbookImage(post.getLookbookImage())
                 .ootdImage(post.getOotdImage())
-                .description(post.getDescription())
+                .lookbookImage(post.getLookbookImage())
                 .postCondition(post.getPostCondition())
                 .createdAt(post.getCreatedAt())
+                .preferCount(postPreferRepository.countByPost(post))
+                .commentCount(commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post))
+                .isLikedByMember(postPreferRepository.existsByPostAndMember(post, member))
                 .build();
     }
 
-    public List<PostResponseDTO.PostGetResultDTO> toGetResultDTO(List<Post> posts, Member member) {
+    public PostResponseDTO.PostAddDTO toPostAddDTO(Post post){
+        return PostResponseDTO.PostAddDTO.builder()
+                .description(post.getDescription())
+                .build();
+    }
+
+    public List<PostResponseDTO.AllPostGetDTO> toGetAllPostDTO(List<Post> posts, Member member) {
         return posts.stream()
-                .map(post -> new PostResponseDTO.PostGetResultDTO(
-                        post.getMember().getName(),
-                        post.getMember().getProfileimage(),
-                        post.getId(),
-                        post.getLookbookImage(),
-                        post.getOotdImage(),
-                        post.getDescription(),
-                        post.getPostCondition(),
-                        post.getCreatedAt(),
-                        postPreferRepository.countByPost(post), // prefer 개수
-                        postPreferRepository.existsByPostAndMember(post, member),
-                        commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post)))
+                .map(post -> new PostResponseDTO.AllPostGetDTO(
+                        toMemberDTO(member),
+                        toPostDTO(post, member)))
                 .collect(Collectors.toList());
+    }
+
+
+    public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member) {
+        return PostResponseDTO.OnePostGetDTO.builder()
+                .member(toMemberDTO(member))
+                .post(toPostDTO(post, member))
+                .postAdd(toPostAddDTO(post))
+                .build();
     }
 }
