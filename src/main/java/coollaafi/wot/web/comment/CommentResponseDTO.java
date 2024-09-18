@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 
 public class CommentResponseDTO {
@@ -25,7 +24,7 @@ public class CommentResponseDTO {
     public static class CommentGetDTO{
         Long commentId;
         String memberName;
-        URL memberImageUrl;
+        String memberImageUrl;
         String content;
         Long replyCount;
         LocalDateTime createdAt;

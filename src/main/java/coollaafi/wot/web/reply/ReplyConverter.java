@@ -1,11 +1,9 @@
 package coollaafi.wot.web.reply;
 
 import coollaafi.wot.web.comment.Comment;
-import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.entity.Member;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
