@@ -21,14 +21,14 @@ import java.util.List;
 public class PhotoController {
     private final PhotoService photoService;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "이미지 업로드 API", description = "이미지 업로드시 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
     public ApiResponse<Void> uploadPhotos(@RequestParam("photos") List<MultipartFile> photos,
-                                            @RequestParam("userId") Long userId) throws IOException {
-        photoService.uploadPhotos(photos, userId);
+                                            @RequestParam("memberId") Long memberId) throws IOException {
+        photoService.uploadPhotos(photos, memberId);
         return ApiResponse.onSuccess(null);
     }
 
