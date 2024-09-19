@@ -1,7 +1,7 @@
 package coollaafi.wot.web.post;
 
 import coollaafi.wot.web.comment.CommentRepository;
-import coollaafi.wot.web.member.MemberDTO;
+import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.postPrefer.PostPreferRepository;
 import coollaafi.wot.web.reply.ReplyRepository;
@@ -17,6 +17,7 @@ public class PostConverter {
     private final PostPreferRepository postPreferRepository;
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
+    private final MemberConverter memberConverter;
 
     public Post toEntity(String ootdImage, String lookbookImage, Member member) {
         return Post.builder()
@@ -30,13 +31,6 @@ public class PostConverter {
         return PostResponseDTO.PostCreateDTO.builder()
                 .postId(post.getId())
                 .createdAt(post.getCreatedAt())
-                .build();
-    }
-
-    public MemberDTO toMemberDTO(Member member){
-        return MemberDTO.builder()
-                .memberName(member.getName())
-                .memberImage(member.getProfileimage())
                 .build();
     }
 
@@ -62,7 +56,7 @@ public class PostConverter {
     public List<PostResponseDTO.AllPostGetDTO> toGetAllPostDTO(List<Post> posts, Member member) {
         return posts.stream()
                 .map(post -> new PostResponseDTO.AllPostGetDTO(
-                        toMemberDTO(post.getMember()),
+                        memberConverter.toMemberBasedDTO(post.getMember()),
                         toPostDTO(post, member)))
                 .collect(Collectors.toList());
     }
@@ -70,7 +64,7 @@ public class PostConverter {
 
     public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member) {
         return PostResponseDTO.OnePostGetDTO.builder()
-                .member(toMemberDTO(post.getMember()))
+                .member(memberConverter.toMemberBasedDTO(post.getMember()))
                 .post(toPostDTO(post, member))
                 .postAdd(toPostAddDTO(post))
                 .build();

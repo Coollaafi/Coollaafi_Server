@@ -55,7 +55,7 @@ public class PostResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AllPostGetDTO{
-        private MemberDTO member;
+        private MemberDTO.MemberBasedDTO member;
         private PostDTO post;
     }
 
@@ -64,7 +64,7 @@ public class PostResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OnePostGetDTO{
-        private MemberDTO member;
+        private MemberDTO.MemberBasedDTO member;
         private PostDTO post;
         private PostAddDTO postAdd;
     }
