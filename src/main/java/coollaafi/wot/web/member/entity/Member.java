@@ -39,7 +39,7 @@ public class Member extends BaseEntity {
 
     private String profileimage;
 
-
+    private Alias alias;
 
     @Column(unique = true)
     private String accessToken;
@@ -70,7 +70,6 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Photo> photos;
-
 
     public Set<Member> getFriends(){
         return Stream.concat(
