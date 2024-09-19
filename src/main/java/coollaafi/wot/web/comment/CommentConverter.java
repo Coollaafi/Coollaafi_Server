@@ -1,8 +1,8 @@
 package coollaafi.wot.web.comment;
 
+import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.post.Post;
-import coollaafi.wot.web.post.PostResponseDTO;
 import coollaafi.wot.web.reply.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentConverter {
     private final ReplyRepository replyRepository;
+    private final MemberConverter memberConverter;
+
     public Comment toEntity(Post post, Member member, String content) {
         return Comment.builder()
                 .post(post)
@@ -32,9 +34,8 @@ public class CommentConverter {
     public List<CommentResponseDTO.CommentGetDTO> toGetDTO(List<Comment> comments) {
         return comments.stream()
                 .map(comment -> new CommentResponseDTO.CommentGetDTO(
+                        memberConverter.toMemberBasedDTO(comment.getMember()),
                         comment.getId(),
-                        comment.getMember().getName(),
-                        comment.getMember().getProfileimage(),
                         comment.getContent(),
                         replyRepository.countByComment(comment),
                         comment.getCreatedAt()))
