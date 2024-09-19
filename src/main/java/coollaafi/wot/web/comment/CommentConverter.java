@@ -4,11 +4,11 @@ import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.reply.ReplyRepository;
+import coollaafi.wot.web.reply.ReplyResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -31,14 +31,20 @@ public class CommentConverter {
                 .build();
     }
 
-    public List<CommentResponseDTO.CommentGetDTO> toGetDTO(List<Comment> comments) {
-        return comments.stream()
-                .map(comment -> new CommentResponseDTO.CommentGetDTO(
-                        memberConverter.toMemberBasedDTO(comment.getMember()),
-                        comment.getId(),
-                        comment.getContent(),
-                        replyRepository.countByComment(comment),
-                        comment.getCreatedAt()))
-                .collect(Collectors.toList());
+    public CommentResponseDTO.CommentGetDTO toCommentGetDTO(Comment comment){
+        return CommentResponseDTO.CommentGetDTO.builder()
+                .member(memberConverter.toMemberBasedDTO(comment.getMember()))
+                .commentId(comment.getId())
+                .content(comment.getContent())
+                .replyCount(replyRepository.countByComment(comment))
+                .createdAt(comment.getCreatedAt())
+                .build();
+    }
+
+    public CommentResponseDTO.CommentWithReplyDTO toCommentWithRepliesDTO(Comment comment, List<ReplyResponseDTO.ReplyGetDTO> replies){
+        return CommentResponseDTO.CommentWithReplyDTO.builder()
+                .comment(toCommentGetDTO(comment))
+                .replies(replies)
+                .build();
     }
 }
