@@ -1,11 +1,11 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.web.member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 
 public class PostResponseDTO {
@@ -13,10 +13,17 @@ public class PostResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostCreateLookBookResultDTO{
-        private Long postId;
+    public static class LookbookDTO{
         private String ootdImage;
         private String lookbookImage;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostCreateDTO{
+        private Long postId;
         private LocalDateTime createdAt;
     }
 
@@ -24,30 +31,41 @@ public class PostResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostCreateResultDTO{
+    public static class PostDTO{
         private Long postId;
         private String ootdImage;
         private String lookbookImage;
-        private String description;
-        private PostCondition postCondition;
-        private LocalDateTime createdAt;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PostGetResultDTO{
-        private String memberName;
-        private URL memberImage;
-        private Long postId;
-        private String ootdImage;
-        private String lookbookImage;
-        private String description;
         private PostCondition postCondition;
         private LocalDateTime createdAt;
         private Long preferCount;
-        private boolean isLikedByMember;
         private Long commentCount;
+        private Boolean isLikedByMember;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostAddDTO{
+        private String description;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AllPostGetDTO{
+        private MemberDTO member;
+        private PostDTO post;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OnePostGetDTO{
+        private MemberDTO member;
+        private PostDTO post;
+        private PostAddDTO postAdd;
     }
 }

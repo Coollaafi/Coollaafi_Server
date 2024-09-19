@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 
 public class ReplyResponseDTO {
@@ -25,7 +24,7 @@ public class ReplyResponseDTO {
     public static class ReplyGetDTO{
         Long replyId;
         String memberName;
-        URL memberImageUrl;
+        String memberImageUrl;
         String content;
         LocalDateTime createdAt;
     }

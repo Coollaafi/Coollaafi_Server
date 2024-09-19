@@ -19,12 +19,6 @@ public class ReplyController {
     // 대댓글 작성 API
     @PostMapping("/")
     @Operation(summary = "대댓글 작성 API", description = "대댓글을 작성할 때 필요한 API입니다.")
-    @Parameter(
-            in = ParameterIn.HEADER,
-            name = "Authorization", required = true,
-            schema = @Schema(type = "string"),
-            description = "Bearer [Access 토큰]"
-    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
@@ -36,12 +30,6 @@ public class ReplyController {
     // 댓글에 달린 대댓글 조회 API
     @GetMapping("/{commentId}")
     @Operation(summary = "대댓글 조회 API", description = "대댓글을 조회 때 필요한 API입니다.")
-    @Parameter(
-            in = ParameterIn.HEADER,
-            name = "Authorization", required = true,
-            schema = @Schema(type = "string"),
-            description = "Bearer [Access 토큰]"
-    )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
