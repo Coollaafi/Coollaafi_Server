@@ -1,5 +1,6 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostResponseDTO {
     @Builder
@@ -67,5 +69,6 @@ public class PostResponseDTO {
         private MemberDTO.MemberBasedDTO member;
         private PostDTO post;
         private PostAddDTO postAdd;
+        private List<CommentResponseDTO.CommentWithReplyDTO> comments;
     }
 }

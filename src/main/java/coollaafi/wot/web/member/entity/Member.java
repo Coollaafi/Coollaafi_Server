@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +69,14 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Photo> photos;
+
+    // 엔티티 저장 전에 호출되는 메서드
+    @PrePersist
+    public void prePersist() {
+        if (this.alias == null) {
+            this.alias = Alias.COMMON; // 기본 별명 설정
+        }
+    }
 
     public Set<Member> getFriends(){
         return Stream.concat(

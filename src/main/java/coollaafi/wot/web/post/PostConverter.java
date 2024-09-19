@@ -1,6 +1,7 @@
 package coollaafi.wot.web.post;
 
 import coollaafi.wot.web.comment.CommentRepository;
+import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.postPrefer.PostPreferRepository;
@@ -62,11 +63,12 @@ public class PostConverter {
     }
 
 
-    public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member) {
+    public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member, List<CommentResponseDTO.CommentWithReplyDTO> comments) {
         return PostResponseDTO.OnePostGetDTO.builder()
                 .member(memberConverter.toMemberBasedDTO(post.getMember()))
                 .post(toPostDTO(post, member))
                 .postAdd(toPostAddDTO(post))
+                .comments(comments)
                 .build();
     }
 }

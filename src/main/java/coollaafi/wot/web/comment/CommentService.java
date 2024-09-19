@@ -7,11 +7,16 @@ import coollaafi.wot.web.member.repository.MemberRepository;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.post.PostHandler;
 import coollaafi.wot.web.post.PostRepository;
+import coollaafi.wot.web.reply.Reply;
+import coollaafi.wot.web.reply.ReplyConverter;
+import coollaafi.wot.web.reply.ReplyRepository;
+import coollaafi.wot.web.reply.ReplyResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,8 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentConverter commentConverter;
     private final MemberRepository memberRepository;
+    private final ReplyRepository replyRepository;
+    private final ReplyConverter replyConverter;
 
     // 댓글 작성
     @Transactional
@@ -37,10 +44,14 @@ public class CommentService {
 
     // 특정 게시글에 달린 댓글 조회
     @Transactional
-    public List<CommentResponseDTO.CommentGetDTO> getCommentsByPostId(Long postId) {
+    public List<CommentResponseDTO.CommentWithReplyDTO> getCommentsByPostId(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
         List<Comment> commentList = commentRepository.findByPost(post);
-        return commentConverter.toGetDTO(commentList);
+        return commentList.stream().map(comment -> {
+            List<Reply> replyList = replyRepository.findByComment(comment);
+            List<ReplyResponseDTO.ReplyGetDTO> replies = replyConverter.toGetDTO(replyList);
+            return commentConverter.toCommentWithRepliesDTO(comment, replies);
+        }).collect(Collectors.toList());
     }
 }

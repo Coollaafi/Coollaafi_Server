@@ -4,10 +4,13 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 //import coollaafi.wot.web.ai.AIService;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.ai.AIService;
+import coollaafi.wot.web.comment.CommentResponseDTO;
+import coollaafi.wot.web.comment.CommentService;
 import coollaafi.wot.web.friendship.FriendshipRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
+import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.photo.PhotoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,8 @@ public class PostService {
     private final AmazonS3Manager amazonS3Manager;
     private final FriendshipRepository friendshipRepository;
     private final PhotoService photoService;
+    private final CommentService commentService;
+    private final MemberService memberService;
 
     @Transactional
     public PostResponseDTO.LookbookDTO createLookbook(Long memberId, MultipartFile ootdImage) throws IOException {
@@ -66,6 +71,7 @@ public class PostService {
         post.setDescription(requestDTO.getDescription());
         post.setPostCondition(requestDTO.getPostCondition());
         Post savedPost = postRepository.save(post);
+        memberService.setAlias(savedPost.getMember());
         return postConverter.toPostCreateDTO(savedPost);
     }
 
@@ -91,7 +97,7 @@ public class PostService {
                 .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
-
-        return postConverter.toGetOnePostDTO(post, member);
+        List<CommentResponseDTO.CommentWithReplyDTO> comments = commentService.getCommentsByPostId(postId);
+        return postConverter.toGetOnePostDTO(post, member, comments);
     }
 }

@@ -2,9 +2,6 @@ package coollaafi.wot.web.comment;
 
 import coollaafi.wot.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +31,8 @@ public class CommentController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<List<CommentResponseDTO.CommentGetDTO>> getCommentsByPostId(@PathVariable Long postId) {
-        List<CommentResponseDTO.CommentGetDTO> comments = commentService.getCommentsByPostId(postId);
+    public ApiResponse<List<CommentResponseDTO.CommentWithReplyDTO>> getCommentsByPostId(@PathVariable Long postId) {
+        List<CommentResponseDTO.CommentWithReplyDTO> comments = commentService.getCommentsByPostId(postId);
         return ApiResponse.onSuccess(comments);
     }
 }

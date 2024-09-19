@@ -5,6 +5,7 @@ import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
+import coollaafi.wot.web.member.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class PhotoService {
     private final MemberRepository memberRepository;
     private final AmazonS3Manager amazonS3Manager;
     private final PhotoRepository photoRepository;
+    private final MemberService memberService;
 
     // 여러 사진을 업로드하고 메타데이터 저장
     @Transactional
@@ -50,6 +52,7 @@ public class PhotoService {
         photo.setUploadDate(new Date());
         photo.setMember(member);
 
+        memberService.setAlias(member);
         return photoRepository.save(photo);  // 사진과 메타데이터 저장
     }
 }
