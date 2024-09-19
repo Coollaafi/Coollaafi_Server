@@ -24,11 +24,15 @@ public class PostController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
     public ApiResponse<PostResponseDTO.LookbookDTO> createLookBookPost(@Valid @RequestParam Long memberId, @RequestParam("ootdImage") MultipartFile ootdImage) throws IOException {
+        if (ootdImage.isEmpty()) {
+            throw new IllegalArgumentException("업로드할 이미지가 없습니다.");
+        }
+
         PostResponseDTO.LookbookDTO responseDTO = postService.createLookbook(memberId, ootdImage);
         return ApiResponse.onSuccess(responseDTO);
     }
 
-    @PostMapping(value = "/first", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/first")
     @Operation(summary = "게시글 작성 API - 중간저장", description = "게시글을 작성시 룩북 생성 이후 다음으로 넘어갈 때 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
@@ -48,18 +52,18 @@ public class PostController {
         return ApiResponse.onSuccess(responseDTO);
     }
 
-    @GetMapping("/{memberId}")
-    @Operation(summary = "게시글 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @GetMapping("/")
+    @Operation(summary = "게시글 전체 조회 API", description = "게시글 전체 조회에 필요한 API입니다. 현재 사용자의 친구가 일주일 내에 올린 게시글이 조회됩니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<List<PostResponseDTO.AllPostGetDTO>> getAllPost(@Valid @PathVariable Long memberId) {
+    public ApiResponse<List<PostResponseDTO.AllPostGetDTO>> getAllPost(@Valid @RequestParam Long memberId) {
         List<PostResponseDTO.AllPostGetDTO> responseDTO = postService.getAllPost(memberId);
         return ApiResponse.onSuccess(responseDTO);
     }
 
     @GetMapping("/{postId}")
-    @Operation(summary = "게시글 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @Operation(summary = "게시글 상세 조회 API", description = "게시글 조회에 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })

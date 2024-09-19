@@ -62,7 +62,7 @@ public class PostConverter {
     public List<PostResponseDTO.AllPostGetDTO> toGetAllPostDTO(List<Post> posts, Member member) {
         return posts.stream()
                 .map(post -> new PostResponseDTO.AllPostGetDTO(
-                        toMemberDTO(member),
+                        toMemberDTO(post.getMember()),
                         toPostDTO(post, member)))
                 .collect(Collectors.toList());
     }
@@ -70,7 +70,7 @@ public class PostConverter {
 
     public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member) {
         return PostResponseDTO.OnePostGetDTO.builder()
-                .member(toMemberDTO(member))
+                .member(toMemberDTO(post.getMember()))
                 .post(toPostDTO(post, member))
                 .postAdd(toPostAddDTO(post))
                 .build();

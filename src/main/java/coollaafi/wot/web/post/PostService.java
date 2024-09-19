@@ -36,6 +36,8 @@ public class PostService {
 
         // ootd 이미지 S3에 업로드 후 Photo 엔티티에 저장
         String ootdUrl = photoService.savePhoto(ootdImage, "ootd/", memberId, member).getS3Url();
+        System.out.println("ootd 성공");
+
 
         // lookbook 이미지 생성 후 S3에 업로드
         MultipartFile lookbookImage = aiService.generateLookBookImage(ootdImage);
