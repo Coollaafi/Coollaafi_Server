@@ -32,14 +32,8 @@ public class PhotoService {
         }
     }
 
-    // 특정 사용자의 사진 조회
+    // S3에 파일 업로드 및 메타데이터 추출해 Photo 엔티티로 추가
     @Transactional
-    public List<Photo> getPhotosByMemberId(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        return photoRepository.findByMember(member);
-    }
-
     public Photo savePhoto(MultipartFile file, String keyName, Long memberId, Member member) throws IOException {
         // S3에 파일 업로드
         String s3Url = amazonS3Manager.uploadFile(keyName, file, memberId);
@@ -56,8 +50,6 @@ public class PhotoService {
         photo.setUploadDate(new Date());
         photo.setMember(member);
 
-        Photo savedPhoto = photoRepository.save(photo);  // 사진과 메타데이터 저장
-
-        return savedPhoto;
+        return photoRepository.save(photo);  // 사진과 메타데이터 저장
     }
 }
