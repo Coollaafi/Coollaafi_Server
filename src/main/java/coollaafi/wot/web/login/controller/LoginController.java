@@ -6,9 +6,8 @@ import coollaafi.wot.web.kakao.KakaoService;
 import coollaafi.wot.web.login.dto.KakaoUnlinkDTO;
 import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.login.dto.MemberResponseDTO;
-import coollaafi.wot.web.member.Service.MemberQueryService;
+import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.member.entity.Member;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class LoginController {
     private final KakaoService kakaoService;
-    private final MemberQueryService memberQueryService;
+    private final MemberService memberService;
 
     @Autowired
-    public LoginController(KakaoService kakaoService, MemberQueryService memberQueryService) {
+    public LoginController(KakaoService kakaoService, MemberService memberService) {
         this.kakaoService = kakaoService;
-        this.memberQueryService = memberQueryService;
+        this.memberService = memberService;
     }
 
     @Value("${security.oauth2.client.registration.kakao.redirect-uri}")
@@ -35,7 +34,7 @@ public class LoginController {
 
     @GetMapping("/member_info/{uid}")
     public ApiResponse<MemberResponseDTO> getMemberInfo(@PathVariable(name = "uid") Long uid){
-        Member member = memberQueryService.getMemberByUid(uid);
+        Member member = memberService.getMemberByUid(uid);
         return ApiResponse.onSuccess(MemberResponseDTO.builder()
                 .memberId(member.getId())
                 .build());

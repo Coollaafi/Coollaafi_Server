@@ -1,5 +1,6 @@
 package coollaafi.wot.web.reply;
 
+import coollaafi.wot.web.member.MemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,9 +23,8 @@ public class ReplyResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ReplyGetDTO{
+        MemberDTO.MemberBasedDTO member;
         Long replyId;
-        String memberName;
-        String memberImageUrl;
         String content;
         LocalDateTime createdAt;
     }
