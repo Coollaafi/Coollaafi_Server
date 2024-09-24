@@ -8,9 +8,15 @@ import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.login.dto.MemberResponseDTO;
 import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.member.entity.Member;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 public class LoginController {
@@ -40,9 +46,13 @@ public class LoginController {
                 .build());
     }
 
-    @GetMapping("/login/oauth2/code/kakao")
-    public LoginResponseDTO kakao(@RequestParam("code") String code) {
-        return kakaoService.kakaoLogin(code, redirectUri);
+    @GetMapping(value = "/login/oauth2/code/kakao", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "로그인 API", description = "로그인 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestBody String serviceId, @RequestBody String nickname, @RequestBody MultipartFile profileImage) throws IOException {
+        return kakaoService.kakaoLogin(code, redirectUri, serviceId, nickname, profileImage);
     }
 
     @GetMapping("/kakao")

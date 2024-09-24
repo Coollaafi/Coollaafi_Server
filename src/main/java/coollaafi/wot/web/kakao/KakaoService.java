@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.jwt.AuthTokens;
 import coollaafi.wot.jwt.AuthTokensGenerator;
+import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -20,7 +21,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class KakaoService {
 
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
+    private final AmazonS3Manager amazonS3Manager;
 
     @Value("${security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
@@ -37,7 +41,7 @@ public class KakaoService {
     @Value("${security.oauth2.client.registration.kakao.client-secret}")
     private String clientSecret;
 
-    public LoginResponseDTO kakaoLogin(String code, String redirectUri) {
+    public LoginResponseDTO kakaoLogin(String code, String redirectUri, String serviceId, String nickname, MultipartFile profileImage) throws IOException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code, redirectUri);
 
@@ -45,7 +49,7 @@ public class KakaoService {
         HashMap<String, Object> userInfo = getKakaoUserInfo(accessToken);
 
         // 3. 카카오ID로 회원가입 & 로그인 처리
-        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo, accessToken);
+        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo, accessToken, serviceId, nickname, profileImage);
 
         return kakaoUserResponse;
     }
@@ -137,7 +141,7 @@ public class KakaoService {
 
     // 3. 카카오ID로 회원가입 & 로그인 처리
     @Transactional
-    public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken) {
+    public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken, String serviceId, String nickname, MultipartFile profileImage) throws IOException {
         Long uid = Long.valueOf(userInfo.get("id").toString());
 
         Member kakaoUser = memberRepository.findByUid(uid).orElse(null);
@@ -146,6 +150,11 @@ public class KakaoService {
             kakaoUser = new Member();
             kakaoUser.setUid(uid);
             kakaoUser.setAccessToken(accessToken);
+            kakaoUser.setServiceId(serviceId);
+            kakaoUser.setNickname(nickname);
+
+            String profileImageUrl = amazonS3Manager.uploadFile("/profile", profileImage, kakaoUser.getId());
+            kakaoUser.setProfileimage(profileImageUrl);
 
             Member savedMember = memberRepository.save(kakaoUser);
         }else {
