@@ -117,8 +117,12 @@ public class PostService {
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        // 3. memberId로 해당 기간에 해당하는 게시물 조회
-        List<Post> posts = postRepository.findPostsByMemberAndDateRange(memberId, startDate, endDate);
+        // 3. LocalDate -> LocalDateTime 변환
+        LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
+
+        // 4. memberId로 해당 기간에 해당하는 게시물 조회
+        List<Post> posts = postRepository.findPostsByMemberAndDateRange(memberId, startDateTime, endDateTime);
 
         // 날짜와 해당 날짜의 Lookbook Image 맵핑
         Map<LocalDate, String> postMap = posts.stream()
