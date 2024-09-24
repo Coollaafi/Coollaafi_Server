@@ -13,7 +13,8 @@ public class MemberConverter {
 
     public MemberDTO.MemberBasedDTO toMemberBasedDTO(Member member){
         return MemberDTO.MemberBasedDTO.builder()
-                .memberName(member.getNickname())
+                .memberServiceId(member.getServiceId())
+                .memberNickName(member.getNickname())
                 .memberImage(member.getProfileimage())
                 .alias(member.getAlias().getAlias())
                 .build();

@@ -11,7 +11,8 @@ public class MemberDTO{
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberBasedDTO{
-        private String memberName;
+        private String memberServiceId;
+        private String memberNickName;
         private String memberImage;
         private String alias;
     }

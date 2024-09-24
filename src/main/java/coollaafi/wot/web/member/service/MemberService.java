@@ -8,8 +8,12 @@ import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
 import coollaafi.wot.web.photo.PhotoRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,11 +22,13 @@ public class MemberService {
     private final MemberConverter memberConverter;
     private final PhotoRepository photoRepository;
 
+    @Transactional
     public Member getMemberByUid(Long uid){
         return memberRepository.findByUid(uid)
                 .orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
+    @Transactional
     public MemberDTO.MemberAllDTO getMemberDTO(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
@@ -30,6 +36,7 @@ public class MemberService {
         return memberConverter.toMemberAllDTO(member);
     }
 
+    @Transactional
     public Void setAlias(Member member){
         Long imageCount = photoRepository.countPhotoByMember(member);
 
@@ -41,5 +48,21 @@ public class MemberService {
 
         memberRepository.save(member);
         return null;
+    }
+
+    @Transactional
+    public List<MemberDTO.MemberBasedDTO> searchMembers(String searchTerm) {
+        List<Member> searchMembers = memberRepository.findByNicknameOrUserIdStartsWith(searchTerm);
+        return searchMembers.stream()
+                .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
+    }
+
+    // 특정 멤버의 친구 목록을 조회
+    @Transactional
+    public List<MemberDTO.MemberBasedDTO> getFriends(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        return member.getFriends().stream()
+                .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
     }
 }
