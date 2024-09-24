@@ -34,7 +34,9 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private Long uid;
 
-    private String name;
+    private String serviceId;
+
+    private String nickname;
 
     private String profileimage;
 
