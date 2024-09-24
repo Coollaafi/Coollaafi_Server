@@ -18,8 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -99,5 +103,32 @@ public class PostService {
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
         List<CommentResponseDTO.CommentWithReplyDTO> comments = commentService.getCommentsByPostId(postId);
         return postConverter.toGetOnePostDTO(post, member, comments);
+    }
+
+    @Transactional
+    public CalendarDTO getCalendar(Long memberId, Integer year, Integer month) {
+        // 1. year와 month가 null일 경우 현재 날짜 기준으로 설정
+        LocalDate currentDate = LocalDate.now();
+        year = year==null? currentDate.getYear():year;
+        month = month==null? currentDate.getMonthValue():month;
+
+        // 2. 해당 연도/월의 첫날과 마지막 날 계산
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        // 3. memberId로 해당 기간에 해당하는 게시물 조회
+        List<Post> posts = postRepository.findPostsByMemberAndDateRange(memberId, startDate, endDate);
+
+        // 날짜와 해당 날짜의 Lookbook Image 맵핑
+        Map<LocalDate, String> postMap = posts.stream()
+                .collect(Collectors.toMap(
+                        post -> post.getCreatedAt().toLocalDate(),
+                        Post::getLookbookImage,
+                        (existing, replacement) -> existing // 중복된 날짜가 있으면 첫 번째 값을 유지
+                ));
+
+        // 5. 캘린더를 생성하여 반환
+        return postConverter.createCalendarDTO(yearMonth, postMap);
     }
 }

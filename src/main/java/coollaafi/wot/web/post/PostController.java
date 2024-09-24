@@ -71,4 +71,14 @@ public class PostController {
         PostResponseDTO.OnePostGetDTO responseDTO = postService.getPost(postId, memberId);
         return ApiResponse.onSuccess(responseDTO);
     }
+
+    @GetMapping("/calendar/{memberId}")
+    @Operation(summary = "게시글 상세 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<CalendarDTO> getPost(@Valid @PathVariable Long memberId, @RequestParam Integer year, @RequestParam Integer month) {
+        CalendarDTO responseDTO = postService.getCalendar(memberId, year, month);
+        return ApiResponse.onSuccess(responseDTO);
+    }
 }

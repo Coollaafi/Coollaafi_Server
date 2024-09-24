@@ -46,12 +46,12 @@ public class LoginController {
                 .build());
     }
 
-    @GetMapping(value = "/login/oauth2/code/kakao", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/login/oauth2/code/kakao", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "로그인 API", description = "로그인 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestBody String serviceId, @RequestBody String nickname, @RequestBody MultipartFile profileImage) throws IOException {
+    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestBody String serviceId, @RequestBody String nickname, @RequestPart MultipartFile profileImage) throws IOException {
         return kakaoService.kakaoLogin(code, redirectUri, serviceId, nickname, profileImage);
     }
 
