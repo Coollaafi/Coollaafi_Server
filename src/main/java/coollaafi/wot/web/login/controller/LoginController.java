@@ -51,7 +51,7 @@ public class LoginController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestBody String serviceId, @RequestBody String nickname, @RequestPart MultipartFile profileImage) throws IOException {
+    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestParam String serviceId, @RequestParam String nickname, @RequestPart MultipartFile profileImage) throws IOException {
         return kakaoService.kakaoLogin(code, redirectUri, serviceId, nickname, profileImage);
     }
 
