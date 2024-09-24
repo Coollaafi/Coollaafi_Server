@@ -133,6 +133,6 @@ public class PostService {
                 ));
 
         // 5. 캘린더를 생성하여 반환
-        return postConverter.createCalendarDTO(yearMonth, postMap);
+        return postConverter.createCalendarDTO(postMap);
     }
 }

@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -75,16 +74,12 @@ public class PostConverter {
                 .build();
     }
 
-    public CalendarDTO createCalendarDTO(YearMonth yearMonth, Map<LocalDate, String> postMap) {
+    public CalendarDTO createCalendarDTO(Map<LocalDate, String> postMap) {
         CalendarDTO calendarDTO = new CalendarDTO();
-        calendarDTO.setYear(yearMonth.getYear());
-        calendarDTO.setMonth(yearMonth.getMonthValue());
 
-        // 해당 월의 모든 날짜에 대해 lookbookImage 매핑
-        for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
-            LocalDate date = yearMonth.atDay(day);
-            String lookbookImage = postMap.getOrDefault(date, null); // 이미지가 없으면 null
-            calendarDTO.addDay(day, lookbookImage);
+        for (Map.Entry<LocalDate, String> entry : postMap.entrySet()) {
+            CalendarDTO.Day day = new CalendarDTO.Day(entry.getKey(), entry.getValue());  // Day 객체 생성
+            calendarDTO.addDay(day);
         }
 
         return calendarDTO;
