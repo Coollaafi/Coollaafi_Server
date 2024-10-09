@@ -124,15 +124,7 @@ public class PostService {
         // 4. memberId로 해당 기간에 해당하는 게시물 조회
         List<Post> posts = postRepository.findPostsByMemberAndDateRange(memberId, startDateTime, endDateTime);
 
-        // 날짜와 해당 날짜의 Lookbook Image 맵핑
-        Map<LocalDate, String> postMap = posts.stream()
-                .collect(Collectors.toMap(
-                        post -> post.getCreatedAt().toLocalDate(),
-                        Post::getLookbookImage,
-                        (existing, replacement) -> existing // 중복된 날짜가 있으면 첫 번째 값을 유지
-                ));
-
         // 5. 캘린더를 생성하여 반환
-        return postConverter.createCalendarDTO(postMap);
+        return postConverter.createCalendarDTO(posts);
     }
 }

@@ -31,5 +31,7 @@ public class CalendarDTO {
 
         @JsonProperty("lookbookImage")
         private String lookbookImage;
+
+        private Long postId;
     }
 }

@@ -73,7 +73,7 @@ public class PostController {
     }
 
     @GetMapping("/calendar/{memberId}")
-    @Operation(summary = "게시글 상세 조회 API", description = "게시글 조회에 필요한 API입니다.")
+    @Operation(summary = "홈화면 캘린더 조회 API", description = "캘린더 조회에 필요한 API입니다. year, month를 넣어주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })

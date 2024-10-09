@@ -1,5 +1,6 @@
 package coollaafi.wot.web.post;
 
+import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.web.comment.CommentRepository;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.converter.MemberConverter;
@@ -21,6 +22,7 @@ public class PostConverter {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final MemberConverter memberConverter;
+    private final PostRepository postRepository;
 
     public Post toEntity(String ootdImage, String lookbookImage, Member member) {
         return Post.builder()
@@ -74,11 +76,11 @@ public class PostConverter {
                 .build();
     }
 
-    public CalendarDTO createCalendarDTO(Map<LocalDate, String> postMap) {
+    public CalendarDTO createCalendarDTO(List<Post> posts) {
         CalendarDTO calendarDTO = new CalendarDTO();
 
-        for (Map.Entry<LocalDate, String> entry : postMap.entrySet()) {
-            CalendarDTO.Day day = new CalendarDTO.Day(entry.getKey(), entry.getValue());  // Day 객체 생성
+        for (Post post : posts) {
+            CalendarDTO.Day day = new CalendarDTO.Day(post.getCreatedAt().toLocalDate(), post.getLookbookImage(), post.getId());  // Day 객체 생성
             calendarDTO.addDay(day);
         }
 
