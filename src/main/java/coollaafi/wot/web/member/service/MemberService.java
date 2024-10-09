@@ -36,8 +36,7 @@ public class MemberService {
         String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, joinMemberDTO.getMemberId());
         member.setProfileimage(profileImageUrl);
 
-        Member savedMember = memberRepository.save(member);
-        return savedMember;
+        return memberRepository.save(member);
     }
 
     @Transactional

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.jwt.AuthTokens;
 import coollaafi.wot.jwt.AuthTokensGenerator;
-import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -21,9 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 @RequiredArgsConstructor
@@ -151,7 +148,7 @@ public class KakaoService {
             kakaoUser.setUid(uid);
             kakaoUser.setAccessToken(accessToken);
 
-            Member savedMember = memberRepository.save(kakaoUser);
+            memberRepository.save(kakaoUser);
         }else {
             // 사용자 정보가 이미 존재하면 액세스 토큰 업데이트
             kakaoUser.setAccessToken(accessToken);

@@ -6,7 +6,6 @@ import coollaafi.wot.web.kakao.KakaoService;
 import coollaafi.wot.web.login.dto.KakaoUnlinkDTO;
 import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.login.dto.MemberResponseDTO;
-import coollaafi.wot.web.member.MemberDTO;
 import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 public class LoginController {

@@ -1,6 +1,5 @@
 package coollaafi.wot.web.member;
 
-import jakarta.validation.constraints.NegativeOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
