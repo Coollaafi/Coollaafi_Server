@@ -1,6 +1,5 @@
 package coollaafi.wot.web.post;
 
-import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.web.comment.CommentRepository;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.converter.MemberConverter;
@@ -10,9 +9,7 @@ import coollaafi.wot.web.reply.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,7 +19,6 @@ public class PostConverter {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final MemberConverter memberConverter;
-    private final PostRepository postRepository;
 
     public Post toEntity(String ootdImage, String lookbookImage, Member member) {
         return Post.builder()
