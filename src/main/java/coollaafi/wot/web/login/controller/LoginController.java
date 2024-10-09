@@ -6,10 +6,12 @@ import coollaafi.wot.web.kakao.KakaoService;
 import coollaafi.wot.web.login.dto.KakaoUnlinkDTO;
 import coollaafi.wot.web.login.dto.LoginResponseDTO;
 import coollaafi.wot.web.login.dto.MemberResponseDTO;
+import coollaafi.wot.web.member.MemberDTO;
 import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -32,7 +34,7 @@ public class LoginController {
     @Value("${security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
-    @Value("http://localhost:8080")
+    @Value("http://ec2-52-79-57-62.ap-northeast-2.compute.amazonaws.com:8080")
     private String logout_redirectUri;
 
     @Value("${security.oauth2.client.registration.kakao.client-id}")
@@ -51,8 +53,8 @@ public class LoginController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public LoginResponseDTO kakao(@RequestParam("code") String code, @RequestParam String serviceId, @RequestParam String nickname, @RequestPart MultipartFile profileImage) throws IOException {
-        return kakaoService.kakaoLogin(code, redirectUri, serviceId, nickname, profileImage);
+    public LoginResponseDTO kakao(@RequestParam("code") String code, HttpSession session) {
+        return kakaoService.kakaoLogin(code, redirectUri);
     }
 
     @GetMapping("/kakao")

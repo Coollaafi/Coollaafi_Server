@@ -1,6 +1,7 @@
 package coollaafi.wot.web.member.service;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
+import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.MemberDTO;
 import coollaafi.wot.web.member.entity.Alias;
@@ -11,7 +12,9 @@ import coollaafi.wot.web.photo.PhotoRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,21 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
     private final PhotoRepository photoRepository;
+    private final AmazonS3Manager amazonS3Manager;
+
+    @Transactional
+    public Member joinMember(MemberDTO.joinMemberDTO joinMemberDTO, MultipartFile profileImage) throws IOException {
+        Member member = memberRepository.findById(joinMemberDTO.getMemberId())
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.setServiceId(joinMemberDTO.getServiceId());
+        member.setNickname(joinMemberDTO.getNickname());
+        String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, joinMemberDTO.getMemberId());
+        member.setProfileimage(profileImageUrl);
+
+        Member savedMember = memberRepository.save(member);
+        return savedMember;
+    }
 
     @Transactional
     public Member getMemberByUid(Long uid){

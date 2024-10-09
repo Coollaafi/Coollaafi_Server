@@ -33,7 +33,7 @@ public class KakaoService {
 
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
-    private final AmazonS3Manager amazonS3Manager;
+//    private final AmazonS3Manager amazonS3Manager;
 
     @Value("${security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
@@ -41,7 +41,7 @@ public class KakaoService {
     @Value("${security.oauth2.client.registration.kakao.client-secret}")
     private String clientSecret;
 
-    public LoginResponseDTO kakaoLogin(String code, String redirectUri, String serviceId, String nickname, MultipartFile profileImage) throws IOException {
+    public LoginResponseDTO kakaoLogin(String code, String redirectUri) {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code, redirectUri);
 
@@ -49,7 +49,7 @@ public class KakaoService {
         HashMap<String, Object> userInfo = getKakaoUserInfo(accessToken);
 
         // 3. 카카오ID로 회원가입 & 로그인 처리
-        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo, accessToken, serviceId, nickname, profileImage);
+        LoginResponseDTO kakaoUserResponse = kakaoUserLogin(userInfo, accessToken);
 
         return kakaoUserResponse;
     }
@@ -141,7 +141,7 @@ public class KakaoService {
 
     // 3. 카카오ID로 회원가입 & 로그인 처리
     @Transactional
-    public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken, String serviceId, String nickname, MultipartFile profileImage) throws IOException {
+    public LoginResponseDTO kakaoUserLogin(HashMap<String, Object> userInfo, String accessToken) {
         Long uid = Long.valueOf(userInfo.get("id").toString());
 
         Member kakaoUser = memberRepository.findByUid(uid).orElse(null);
@@ -150,11 +150,6 @@ public class KakaoService {
             kakaoUser = new Member();
             kakaoUser.setUid(uid);
             kakaoUser.setAccessToken(accessToken);
-            kakaoUser.setServiceId(serviceId);
-            kakaoUser.setNickname(nickname);
-
-            String profileImageUrl = amazonS3Manager.uploadFile("/profile", profileImage, kakaoUser.getId());
-            kakaoUser.setProfileimage(profileImageUrl);
 
             Member savedMember = memberRepository.save(kakaoUser);
         }else {
