@@ -12,7 +12,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update # 첫 배포 이후 validate 으로 수정
+      ddl-auto: create # 첫 배포 이후 validate 으로 수정
 
   servlet:
     multipart:
