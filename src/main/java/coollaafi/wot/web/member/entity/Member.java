@@ -52,7 +52,7 @@ public class Member extends BaseEntity {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Reply> Reply;
+    private List<Reply> replies;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<PostPrefer> postPrefers;
