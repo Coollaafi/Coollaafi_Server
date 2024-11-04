@@ -6,11 +6,16 @@ import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/member")
@@ -21,12 +26,13 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/join")
+    @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "회원가입 API", description = "회원가입시 필요한 API입니다. 카카오 로그인 이후 호출해주세요.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public Member joinMember(MemberDTO.joinMemberDTO joinMemberDTO, @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+    public Member joinMember(MemberDTO.joinMemberDTO joinMemberDTO,
+                             @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
         return memberService.joinMember(joinMemberDTO, profileImage);
     }
 
