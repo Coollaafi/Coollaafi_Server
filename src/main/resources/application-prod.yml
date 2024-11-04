@@ -36,6 +36,11 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+    access-token-validity: 1800000    # 30 minutes in milliseconds
+    refresh-token-validity: 604800000 # 7 days in milliseconds
+
 cloud:
   aws:
     s3:

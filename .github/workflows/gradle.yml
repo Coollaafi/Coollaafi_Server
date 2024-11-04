@@ -2,9 +2,9 @@ name: SB CI/CD with Gradle
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: ["main", "dev"]
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
@@ -35,6 +35,7 @@ jobs:
           sed -i 's|${KAKAO_CLIENT_ID}|'"${{ secrets.KAKAO_CLIENT_ID }}"'|g' application-prod.yml
           sed -i 's|${KAKAO_CLIENT_SECRET}|'"${{ secrets.KAKAO_CLIENT_SECRET }}"'|g' application-prod.yml
           sed -i 's|${EC2_HOST}|'"${{ secrets.EC2_HOST }}"'|g' application-prod.yml
+          sed -i 's|${JWT_SECRET_KEY}|'"${{ secrets.JWT_SECRET_KEY }}"'|g' application-prod.yml
 
       - name: Grant permission
         run: chmod +x ./gradlew
@@ -72,4 +73,5 @@ jobs:
                             -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
                             -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
                             -e EC2_HOST=${{ secrets.EC2_HOST }} \
+                            -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
                             --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
