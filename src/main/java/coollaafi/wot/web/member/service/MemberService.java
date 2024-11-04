@@ -2,21 +2,20 @@ package coollaafi.wot.web.member.service;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
-import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.MemberDTO;
+import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Alias;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
 import coollaafi.wot.web.photo.PhotoRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -40,13 +39,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member getMemberByUid(Long uid){
-        return memberRepository.findByUid(uid)
-                .orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-    }
-
-    @Transactional
-    public MemberDTO.MemberAllDTO getMemberDTO(Long memberId){
+    public MemberDTO.MemberAllDTO getMemberDTO(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
         setAlias(member);
@@ -54,7 +47,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Void setAlias(Member member){
+    public Void setAlias(Member member) {
         Long imageCount = photoRepository.countPhotoByMember(member);
 
         // 이미지 개수를 기준으로 Alias를 가져옴

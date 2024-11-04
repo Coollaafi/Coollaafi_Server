@@ -5,19 +5,25 @@ import coollaafi.wot.web.comment.Comment;
 import coollaafi.wot.web.friendRequest.FriendRequest;
 import coollaafi.wot.web.friendship.Friendship;
 import coollaafi.wot.web.photo.Photo;
-import coollaafi.wot.web.reply.Reply;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.postPrefer.PostPrefer;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import coollaafi.wot.web.reply.Reply;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +38,7 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(unique = true)
-    private Long uid;
+    private Long kakaoId;
 
     private String serviceId;
 
@@ -44,6 +50,8 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String accessToken;
+
+    private String refreshToken;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Post> posts;
@@ -80,7 +88,7 @@ public class Member extends BaseEntity {
         }
     }
 
-    public Set<Member> getFriends(){
+    public Set<Member> getFriends() {
         return Stream.concat(
                 friendships1.stream().map(Friendship::getMember2),
                 friendships2.stream().map(Friendship::getMember1)

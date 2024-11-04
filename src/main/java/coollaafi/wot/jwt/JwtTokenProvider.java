@@ -1,77 +1,78 @@
 package coollaafi.wot.jwt;
 
-import coollaafi.wot.apiPayload.exception.GeneralException;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Key key;
+    private final long accessTokenValidity;
+    private final long refreshTokenValidity;
 
-    public JwtTokenProvider(@Value("wVtm60YHDIV4GbVtxK3rE59xDZqLLtsjT4nIlPwvW1p3vIjN2jHFZ3VcZ7vTXnZqjF8hJf9vJ8Jf9jF8hJf9J8Jf9vJ8Jf9jF") String secretKey) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+    public JwtTokenProvider(
+            @Value("${spring.jwt.secret}") String secretKey,
+            @Value("${spring.jwt.access-token-validity}") long accessTokenValidity,
+            @Value("${spring.jwt.refresh-token-validity}") long refreshTokenValidity) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.accessTokenValidity = accessTokenValidity;
+        this.refreshTokenValidity = refreshTokenValidity;
     }
 
-    public String accessTokenGenerate(String subject, Date expiredAt) {
+    public String createToken(Long userId) {
+        return createToken(userId, accessTokenValidity);
+    }
+
+    public String createRefreshToken(Long userId) {
+        return createToken(userId, refreshTokenValidity);
+    }
+
+    private String createToken(Long userId, long validityInMilliseconds) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + validityInMilliseconds);
+
         return Jwts.builder()
-                .setSubject(subject)	//uid
-                .setExpiration(expiredAt)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-    public String refreshTokenGenerate(Date expiredAt) {
-        return Jwts.builder()
-                .setExpiration(expiredAt)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();
+
+    // HTTP 요청에서 JWT 토큰을 가져와 사용자 ID 추출
+    public Long getUserIdFromToken(HttpServletRequest request) {
+        String token = resolveToken(request);
+        if (token == null || !validateToken(token)) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Long.parseLong(claims.getSubject());
     }
 
+    // JWT 토큰이 유효한지 검증
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException e) {
-            throw new GeneralException("The token has expired.");
         } catch (JwtException | IllegalArgumentException e) {
-            throw new GeneralException("The token is not valid.");
+            return false;
         }
     }
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        String username = claims.getSubject();
-
-        if (username == null) {
-            throw new GeneralException("The token is not valid.");
+    // Authorization 헤더에서 Bearer 토큰 추출
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
-
-        UserDetails userDetails = User.builder()
-                .username(username)
-                .password("") // password는 필요없으므로 빈 문자열
-                .authorities(List.of()) // authorities를 설정할 경우 추가
-                .build();
-
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    public static void checkAuthorizationHeader(String header) {
-        if (header == null || !header.startsWith("Bearer ")) {
-            throw new GeneralException("Token not delivered."); // 토큰 전달되지 않았을 때 메시지
-        }
+        return null;
     }
 }
