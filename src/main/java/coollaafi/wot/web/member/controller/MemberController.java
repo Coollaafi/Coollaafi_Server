@@ -26,6 +26,11 @@ public class MemberController {
         this.memberService = memberService;
     }
 
+    @GetMapping("/healthcheck")
+    public String healthcheck() {
+        return "OK";
+    }
+
     @PostMapping(value = "/join", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "회원가입 API", description = "회원가입시 필요한 API입니다. 카카오 로그인 이후 호출해주세요.")
     @ApiResponses({

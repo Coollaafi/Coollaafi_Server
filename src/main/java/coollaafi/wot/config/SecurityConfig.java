@@ -23,6 +23,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
+                                "/healthcheck",
                                 "/login/**", "/oauth2/**", "/test", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/kakao/logout/withAccount",
                                 "/v3/api-docs", "/kakao", "/logout") // 인증 없이 접근 가능하도록 설정된 URL들
