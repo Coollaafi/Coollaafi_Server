@@ -32,7 +32,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login") // 사용자 지정 로그인 페이지 경로
-                        .defaultSuccessUrl("/") // 로그인 성공 시 이동할 URL
+                        .defaultSuccessUrl("/success") // 로그인 성공 시 이동할 URL
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService) // OAuth2 사용자 서비스 설정
                         )
