@@ -8,7 +8,7 @@ import coollaafi.wot.web.member.entity.Alias;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
-import coollaafi.wot.web.photo.PhotoRepository;
+import coollaafi.wot.web.ootdImage.OotdImageRepository;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
@@ -22,20 +22,30 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberConverter memberConverter;
-    private final PhotoRepository photoRepository;
+    private final OotdImageRepository ootdImageRepository;
     private final AmazonS3Manager amazonS3Manager;
 
     @Transactional
-    public Member joinMember(MemberDTO.joinMemberDTO joinMemberDTO, MultipartFile profileImage) throws IOException {
+    public MemberDTO.joinMemberResponseDTO joinMember(MemberDTO.joinMemberDTO joinMemberDTO, MultipartFile profileImage)
+            throws IOException, InterruptedException {
         Member member = memberRepository.findById(joinMemberDTO.getMemberId())
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        // 멤버 정보 업데이트
         member.setServiceId(joinMemberDTO.getServiceId());
         member.setNickname(joinMemberDTO.getNickname());
-        String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, joinMemberDTO.getMemberId());
+
+        // 프로필 이미지 업로드
+        String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
         member.setProfileimage(profileImageUrl);
 
-        return memberRepository.save(member);
+        return MemberDTO.joinMemberResponseDTO.builder()
+                .memberId(member.getId())
+                .kakaoId(member.getKakaoId())
+                .serviceId(member.getServiceId())
+                .nickname(member.getNickname())
+                .profileUrl(member.getProfileimage())
+                .build();
     }
 
     @Transactional
@@ -48,7 +58,7 @@ public class MemberService {
 
     @Transactional
     public Void setAlias(Member member) {
-        Long imageCount = photoRepository.countPhotoByMember(member);
+        Long imageCount = ootdImageRepository.countPhotoByMember(member);
 
         // 이미지 개수를 기준으로 Alias를 가져옴
         Alias alias = Alias.getAliasByImageCount(imageCount);
