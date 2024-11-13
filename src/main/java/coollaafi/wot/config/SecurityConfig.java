@@ -60,6 +60,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)) // 인증 실패 시 401 반환
                 )
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(
+                        corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 로그아웃 URL
