@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findById(Long id);
 
-    Optional<Member> findByKakaoId(Long kakaoId);
+    Member findByKakaoId(Long kakaoId);
 
 
     @Query("SELECT m FROM Member m WHERE m.nickname LIKE :searchTerm% OR m.serviceId LIKE :searchTerm%")
