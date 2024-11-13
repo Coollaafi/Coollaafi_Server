@@ -4,13 +4,14 @@ import coollaafi.wot.web.comment.CommentRepository;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.converter.MemberConverter;
 import coollaafi.wot.web.member.entity.Member;
+import coollaafi.wot.web.ootdImage.OotdImage;
+import coollaafi.wot.web.post.PostRequestDTO.PostCreateRequestDTO;
 import coollaafi.wot.web.postPrefer.PostPreferRepository;
 import coollaafi.wot.web.reply.ReplyRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -20,11 +21,14 @@ public class PostConverter {
     private final ReplyRepository replyRepository;
     private final MemberConverter memberConverter;
 
-    public Post toEntity(String ootdImage, String lookbookImage, Member member) {
+    public Post toEntity(PostCreateRequestDTO postCreateRequestDTO, Member member, OotdImage ootdImage,
+                         String lookbookUrl) {
         return Post.builder()
                 .member(member)
                 .ootdImage(ootdImage)
-                .lookbookImage(lookbookImage)
+                .lookbookImage(lookbookUrl)
+                .description(postCreateRequestDTO.getDescription())
+                .postCondition(postCreateRequestDTO.getPostCondition())
                 .build();
     }
 
@@ -35,7 +39,7 @@ public class PostConverter {
                 .build();
     }
 
-    public PostResponseDTO.PostDTO toPostDTO(Post post, Member member){
+    public PostResponseDTO.PostDTO toPostDTO(Post post, Member member) {
         return PostResponseDTO.PostDTO.builder()
                 .postId(post.getId())
                 .ootdImage(post.getOotdImage())
@@ -48,7 +52,7 @@ public class PostConverter {
                 .build();
     }
 
-    public PostResponseDTO.PostAddDTO toPostAddDTO(Post post){
+    public PostResponseDTO.PostAddDTO toPostAddDTO(Post post) {
         return PostResponseDTO.PostAddDTO.builder()
                 .description(post.getDescription())
                 .build();
@@ -63,7 +67,8 @@ public class PostConverter {
     }
 
 
-    public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member, List<CommentResponseDTO.CommentWithReplyDTO> comments) {
+    public PostResponseDTO.OnePostGetDTO toGetOnePostDTO(Post post, Member member,
+                                                         List<CommentResponseDTO.CommentWithReplyDTO> comments) {
         return PostResponseDTO.OnePostGetDTO.builder()
                 .member(memberConverter.toMemberBasedDTO(post.getMember()))
                 .post(toPostDTO(post, member))
@@ -76,7 +81,8 @@ public class PostConverter {
         CalendarDTO calendarDTO = new CalendarDTO();
 
         for (Post post : posts) {
-            CalendarDTO.Day day = new CalendarDTO.Day(post.getCreatedAt().toLocalDate(), post.getLookbookImage(), post.getId());  // Day 객체 생성
+            CalendarDTO.Day day = new CalendarDTO.Day(post.getCreatedAt().toLocalDate(), post.getLookbookImage(),
+                    post.getId());  // Day 객체 생성
             calendarDTO.addDay(day);
         }
 

@@ -3,12 +3,24 @@ package coollaafi.wot.web.post;
 import coollaafi.wot.common.BaseEntity;
 import coollaafi.wot.web.comment.Comment;
 import coollaafi.wot.web.member.entity.Member;
-import coollaafi.wot.web.reply.Reply;
+import coollaafi.wot.web.ootdImage.OotdImage;
 import coollaafi.wot.web.postPrefer.PostPrefer;
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -25,7 +37,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String ootdImage;
+    @OneToOne
+    @JoinColumn(name = "ootd_image_id")
+    private OotdImage ootdImage;
+
     private String lookbookImage;
     private String description;
     private PostCondition postCondition;
