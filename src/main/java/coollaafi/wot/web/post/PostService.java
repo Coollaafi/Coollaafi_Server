@@ -37,7 +37,7 @@ public class PostService {
     @Transactional
     public PostResponseDTO.PostCreateDTO createPost(PostRequestDTO.PostCreateRequestDTO requestDTO,
                                                     MultipartFile lookbookImage)
-            throws IOException, InterruptedException {
+            throws IOException {
         Member member = memberRepository.findById(requestDTO.getMemberId())
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
         OotdImage ootdImage = ootdImageRepository.findById(requestDTO.getOotdImageId())
@@ -66,6 +66,26 @@ public class PostService {
 
         return postConverter.toGetAllPostDTO(postList, member);
     }
+
+    @Transactional
+    public List<PostResponseDTO.AllPostGetDTO> getPostsByLocation(Long memberId, String address) {
+        // 멤버와 친구 목록 조회
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
+
+        // 현재 시점에서 일주일 전 시간
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+
+        // 입력된 주소를 시/도 + 시/구 형식으로 변환
+        String cityAndDistrict = postConverter.extractCityAndDistrict(address);
+
+        // 친구들의 일주일 이내 게시글 중 주소와 일치하는 게시글 조회
+        List<Post> postList = postRepository.findAllByFriendsAndDateAndAddress(friends, oneWeekAgo, cityAndDistrict);
+
+        return postConverter.toGetAllPostDTO(postList, member);
+    }
+
 
     @Transactional
     public PostResponseDTO.OnePostGetDTO getPost(Long postId, Long memberId) {
