@@ -48,6 +48,7 @@ public class AuthService {
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
         member.setAccessToken(accessToken);
+        member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 
         return new AuthDTO.LoginResponse(accessToken, refreshToken, member.getId());
