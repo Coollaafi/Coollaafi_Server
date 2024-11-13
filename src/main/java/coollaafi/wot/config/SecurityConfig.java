@@ -1,6 +1,7 @@
 package coollaafi.wot.config;
 
 import coollaafi.wot.web.oauth2.CustomOAuth2UserService;
+import coollaafi.wot.web.oauth2.OAuth2LoginSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
@@ -45,13 +46,13 @@ public class SecurityConfig {
                                 "/member/healthcheck",
                                 "/login/**", "/oauth2/**", "/test", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/kakao/logout/withAccount",
-                                "/v3/api-docs", "/kakao", "/logout, /auth/me") // 인증 없이 접근 가능하도록 설정된 URL들
+                                "/v3/api-docs", "/kakao", "/logout") // 인증 없이 접근 가능하도록 설정된 URL들
                         .permitAll()
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login") // 사용자 지정 로그인 페이지 경로
-                        .defaultSuccessUrl("http://localhost:3000/success", true) // 로그인 성공 시 이동할 URL
+                        .successHandler(new OAuth2LoginSuccessHandler()) // 성공 시 커스텀 핸들러
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService) // OAuth2 사용자 서비스 설정
                         )

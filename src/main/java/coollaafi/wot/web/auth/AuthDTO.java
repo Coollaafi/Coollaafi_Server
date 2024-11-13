@@ -15,6 +15,7 @@ public class AuthDTO {
         private String accessToken;
         private String refreshToken;
         private Long memberId;
+        public boolean isNewMember;
     }
 
     @Getter
