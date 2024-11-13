@@ -2,7 +2,6 @@ package coollaafi.wot.web.post;
 
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.member.MemberDTO;
-import coollaafi.wot.web.ootdImage.OotdImage;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -26,8 +25,12 @@ public class PostResponseDTO {
     @AllArgsConstructor
     public static class PostDTO {
         private Long postId;
-        private OotdImage ootdImage;
-        private String lookbookImage;
+        private String ootd_url;
+        private String lookbook_url;
+        private String address;
+        private Float tmin;
+        private Float tmax;
+        private String weather_icon_url;
         private PostCondition postCondition;
         private LocalDateTime createdAt;
         private Long preferCount;

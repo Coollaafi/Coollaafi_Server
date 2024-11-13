@@ -42,9 +42,10 @@ public class PostConverter {
     public PostResponseDTO.PostDTO toPostDTO(Post post, Member member) {
         return PostResponseDTO.PostDTO.builder()
                 .postId(post.getId())
-                .ootdImage(post.getOotdImage())
-                .lookbookImage(post.getLookbookImage())
+                .ootd_url(post.getOotdImage().getS3url())
+                .lookbook_url(post.getLookbookImage())
                 .postCondition(post.getPostCondition())
+                .address(extractCityAndDistrict(post.getOotdImage().getAddress()))
                 .createdAt(post.getCreatedAt())
                 .preferCount(postPreferRepository.countByPost(post))
                 .commentCount(commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post))
@@ -87,5 +88,14 @@ public class PostConverter {
         }
 
         return calendarDTO;
+    }
+
+
+    public String extractCityAndDistrict(String fullAddress) {
+        String[] addressParts = fullAddress.split(" ");
+        if (addressParts.length >= 2) {
+            return addressParts[0] + " " + addressParts[1];  // 시/도 + 시/구 까지 반환
+        }
+        return fullAddress;  // 주소 형식이 다를 경우 전체 반환
     }
 }

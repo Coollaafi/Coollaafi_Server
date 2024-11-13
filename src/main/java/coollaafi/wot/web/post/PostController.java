@@ -30,7 +30,7 @@ public class PostController {
     })
     public ApiResponse<PostResponseDTO.PostCreateDTO> createPost(
             @RequestPart("requestDTO") PostRequestDTO.PostCreateRequestDTO requestDTO,
-            @RequestPart("lookbookImage") MultipartFile lookbookImage) throws IOException, InterruptedException {
+            @RequestPart("lookbookImage") MultipartFile lookbookImage) throws IOException {
         PostResponseDTO.PostCreateDTO responseDTO = postService.createPost(requestDTO, lookbookImage);
         return ApiResponse.onSuccess(responseDTO);
     }
@@ -42,6 +42,20 @@ public class PostController {
     })
     public ApiResponse<List<PostResponseDTO.AllPostGetDTO>> getAllPost(@Valid @RequestParam("memberId") Long memberId) {
         List<PostResponseDTO.AllPostGetDTO> responseDTO = postService.getAllPost(memberId);
+        return ApiResponse.onSuccess(responseDTO);
+    }
+
+    @GetMapping("/location")
+    @Operation(summary = "사용자 지역 게시글 조회 API", description = "사용자의 지역과 일치하는 게시글을 조회하는 API입니다."
+            + "address 형식은 서울 서대문구 / 경기 안산시 와 같이 입력해주세요")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공")
+    })
+    public ApiResponse<List<PostResponseDTO.AllPostGetDTO>> getPostsByLocation(
+            @Valid @RequestParam("memberId") Long memberId,
+            @RequestParam("address") String address) {
+
+        List<PostResponseDTO.AllPostGetDTO> responseDTO = postService.getPostsByLocation(memberId, address);
         return ApiResponse.onSuccess(responseDTO);
     }
 
