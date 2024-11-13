@@ -2,8 +2,10 @@ package coollaafi.wot.web.friendship;
 
 import coollaafi.wot.apiPayload.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,18 +22,19 @@ public class FriendshipController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<FriendshipDTO.responseDTO> acceptFriendRequest(@RequestParam Long id){
-        FriendshipDTO.responseDTO friend = friendshipService.acceptFriendRequest(id);
+    public ApiResponse<FriendshipDTO.responseDTO> acceptFriendRequest(
+            @RequestParam("friendRequestId") Long friendRequestId) {
+        FriendshipDTO.responseDTO friend = friendshipService.acceptFriendRequest(friendRequestId);
         return ApiResponse.onSuccess(friend);
     }
 
-    @PostMapping("/request/reject")
+    @PostMapping("/request/reject/{friendRequestId}")
     @Operation(summary = "친구 요청 거절 API", description = "친구 요청을 거절할 때 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<Void> rejectFriendRequest(@RequestParam Long id){
-        friendshipService.rejectFriendRequest(id);
+    public ApiResponse<Void> rejectFriendRequest(@Parameter @PathVariable("friendRequestId") Long friendRequestId) {
+        friendshipService.rejectFriendRequest(friendRequestId);
         return ApiResponse.onSuccess(null);
     }
 }

@@ -20,7 +20,8 @@ public class FriendRequestController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<FriendRequestDTO.responseDTO> sendFriendRequest(@RequestParam Long senderId, @RequestParam Long receiverId){
+    public ApiResponse<FriendRequestDTO.responseDTO> sendFriendRequest(@RequestParam("senderId") Long senderId,
+                                                                       @RequestParam("receiverId") Long receiverId) {
         FriendRequestDTO.responseDTO friendRequest = friendRequestService.sendFriendRequest(senderId, receiverId);
         return ApiResponse.onSuccess(friendRequest);
     }

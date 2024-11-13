@@ -5,12 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class MemberDTO{
+public class MemberDTO {
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MemberBasedDTO{
+    public static class MemberBasedDTO {
         private String memberServiceId;
         private String memberNickName;
         private String memberImage;
@@ -21,7 +21,7 @@ public class MemberDTO{
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MemberAddDTO{
+    public static class MemberAddDTO {
         private String nextAlias;
         private Long photosUntilNextAlias;
     }
@@ -30,7 +30,7 @@ public class MemberDTO{
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MemberAllDTO{
+    public static class MemberAllDTO {
         private MemberBasedDTO memberBased;
         private MemberAddDTO memberAdd;
     }
@@ -39,9 +39,21 @@ public class MemberDTO{
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class joinMemberDTO{
+    public static class joinMemberDTO {
         private Long memberId;
         private String serviceId;
         private String nickname;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class joinMemberResponseDTO {
+        private Long memberId;
+        private Long kakaoId;
+        private String serviceId;
+        private String nickname;
+        private String profileUrl;
     }
 }

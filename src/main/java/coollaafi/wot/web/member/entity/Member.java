@@ -1,10 +1,11 @@
 package coollaafi.wot.web.member.entity;
 
 import coollaafi.wot.common.BaseEntity;
+import coollaafi.wot.web.collageImage.CollageImage;
 import coollaafi.wot.web.comment.Comment;
 import coollaafi.wot.web.friendRequest.FriendRequest;
 import coollaafi.wot.web.friendship.Friendship;
-import coollaafi.wot.web.photo.Photo;
+import coollaafi.wot.web.ootdImage.OotdImage;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.postPrefer.PostPrefer;
 import coollaafi.wot.web.reply.Reply;
@@ -78,7 +79,10 @@ public class Member extends BaseEntity {
     private List<Friendship> friendships2;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Photo> photos;
+    private List<CollageImage> collageImages;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<OotdImage> ootdImages;
 
     // 엔티티 저장 전에 호출되는 메서드
     @PrePersist
