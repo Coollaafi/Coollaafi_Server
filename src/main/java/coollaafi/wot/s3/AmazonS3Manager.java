@@ -21,7 +21,7 @@ public class AmazonS3Manager {
     private final AmazonConfig amazonConfig;
 
     public String uploadFile(String keyName, MultipartFile file, Long kakaoId)
-            throws IOException, InterruptedException {
+            throws IOException {
         String fileName = keyName + kakaoId + "/" + UUID.randomUUID();
 
         // 메타데이터 설정

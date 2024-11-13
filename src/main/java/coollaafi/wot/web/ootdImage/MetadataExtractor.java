@@ -17,14 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class MetadataExtractor {
     private final KakaoAddressService kakaoAddressService;
 
-    public MetadataDTO extract(MultipartFile file) throws Exception {
+    public MetadataDTO extract(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             // 메타데이터 추출
             Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
 
             // 촬영 날짜 추출
             LocalDateTime captureDate = extractCaptureDate(metadata);
-            System.out.println("촬영 날짜: " + captureDate);
 
             // 위도, 경도 추출
             double latitude = extractLatitude(metadata);
@@ -32,10 +31,6 @@ public class MetadataExtractor {
 
             // 주소 검색 수행
             String address = kakaoAddressService.getAddressFromCoordinates(latitude, longitude);
-            System.out.println("주소: " + address);
-
-            System.out.println("위도: " + latitude);
-            System.out.println("경도: " + longitude);
 
             return new MetadataDTO(address, captureDate);
         } catch (Exception e) {

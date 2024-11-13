@@ -3,6 +3,7 @@ package coollaafi.wot.web.ootdImage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,8 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class KakaoAddressService {
 
-    //    @Value("${kakao.api.key}") // application.properties에 저장된 카카오 API 키를 사용
-    private String kakaoApiKey = "b37675fa5cc9cc6aa00018901eded22e";
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    String kakaoApiKey;
 
     private final String KAKAO_API_URL = "https://dapi.kakao.com/v2/local/geo/coord2address.json";
 
@@ -38,8 +39,7 @@ public class KakaoAddressService {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
         // JSON 응답에서 주소 추출
-        String address = extractAddressFromResponse(response.getBody());
-        return address;
+        return extractAddressFromResponse(response.getBody());
     }
 
     private String extractAddressFromResponse(String responseBody) throws JSONException {

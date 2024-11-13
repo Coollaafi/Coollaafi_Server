@@ -15,16 +15,6 @@ public class PostResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class createFirstPostDTO {
-        private Long postId;
-        private List<String> segmentImages;
-        private LocalDateTime createdAt;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class PostCreateDTO {
         private Long postId;
         private LocalDateTime createdAt;

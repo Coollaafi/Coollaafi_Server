@@ -2,7 +2,6 @@ package coollaafi.wot.web.post;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
-import coollaafi.wot.web.collageImage.CollageImageService;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.comment.CommentService;
 import coollaafi.wot.web.friendship.FriendshipRepository;
@@ -13,7 +12,6 @@ import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.ootdImage.OotdImage;
 import coollaafi.wot.web.ootdImage.OotdImageHandler;
 import coollaafi.wot.web.ootdImage.OotdImageRepository;
-import coollaafi.wot.web.ootdImage.OotdImageService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -30,9 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostConverter postConverter;
     private final MemberRepository memberRepository;
-    private final CollageImageService collageImageService;
     private final FriendshipRepository friendshipRepository;
-    private final OotdImageService ootdImageService;
     private final CommentService commentService;
     private final MemberService memberService;
     private final AmazonS3Manager amazonS3Manager;

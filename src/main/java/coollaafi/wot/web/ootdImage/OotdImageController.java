@@ -4,7 +4,6 @@ import coollaafi.wot.apiPayload.ApiResponse;
 import coollaafi.wot.web.post.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.io.IOException;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -28,8 +27,7 @@ public class OotdImageController {
     public ApiResponse<OotdImageResponseDTO.uploadOOTD> createLookBookPost(
             @RequestParam("memberId") Long memberId,
             @RequestParam("ootdImage") MultipartFile ootdImage,
-            @RequestParam("categorySet") Set<Category> categorySet)
-            throws IOException {
+            @RequestParam("categorySet") Set<Category> categorySet) {
         try {
             OotdImageResponseDTO.uploadOOTD segmentImages = ootdImageService.segmentImage(memberId, ootdImage,
                     categorySet);

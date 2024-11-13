@@ -4,7 +4,6 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.collageImage.CollageImageService;
 import coollaafi.wot.web.collageImage.WeatherData;
-import coollaafi.wot.web.member.controller.MemberController;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -17,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +28,6 @@ public class OotdImageService {
     private final MemberRepository memberRepository;
     private final AmazonS3Manager amazonS3Manager;
     private final MetadataExtractor metadataExtractor;
-    private static final Logger log = LoggerFactory.getLogger(MemberController.class);
-
 
     @Transactional
     public OotdImageResponseDTO.uploadOOTD segmentImage(Long memberId, MultipartFile ootdImage,
