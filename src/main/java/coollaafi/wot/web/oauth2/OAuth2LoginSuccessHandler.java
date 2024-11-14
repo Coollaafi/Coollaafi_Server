@@ -4,11 +4,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+    private static final String FRONTEND_URL = "http://localhost:3000"; // 프론트엔드 URL
+
+    // RedirectStrategy 객체를 직접 생성
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
@@ -20,12 +27,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         boolean isNewMember = customUser.isNewMember();
         String kakaoId = customUser.getName();
 
-        // JSON 형태로 응답
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(String.format(
-                "{\"accessToken\":\"%s\", \"refreshToken\":\"%s\", \"isNewMember\":\"%b\", \"userId\":%s}", accessToken,
-                refreshToken,
-                isNewMember, kakaoId));
+        // 프론트엔드 URL로 리다이렉트할 때 임시로 필요한 정보 전달
+        String frontendRedirectUrl = String.format(
+                "%s/login/success?accessToken=%s&refreshToken=%s&isNewMember=%b&kakaoId=%s",
+                FRONTEND_URL, accessToken, refreshToken, isNewMember, kakaoId);
+
+        // 프론트엔드로 리다이렉트
+        redirectStrategy.sendRedirect(request, response, frontendRedirectUrl);
     }
 }
