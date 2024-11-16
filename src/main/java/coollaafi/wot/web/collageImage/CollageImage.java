@@ -1,6 +1,7 @@
 package coollaafi.wot.web.collageImage;
 
 import coollaafi.wot.web.member.entity.Member;
+import coollaafi.wot.web.post.Category;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +27,8 @@ public class CollageImage {
     private Long id;
 
     private String s3url;
+
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

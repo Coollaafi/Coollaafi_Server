@@ -34,9 +34,7 @@ public class WeatherData {
     private Float snow;             // 일별 강설량
     private Float wdir;             // 일별 풍향
     private Float wspd;             // 일별 평균풍속
-    private Float wpgt;             // 일별 최대돌풍
-    private Float pros;             // 일별 해수면 기압
-    private Float tsun;             // 일별 일조시간
+    private Float pres;             // 일별 해수면 기압
 
     @OneToMany(mappedBy = "weatherData", cascade = CascadeType.ALL)
     private List<CollageImage> collageImages;
