@@ -25,12 +25,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = customUser.getAccessToken();
         String refreshToken = customUser.getRefreshToken();
         boolean isNewMember = customUser.isNewMember();
-        String kakaoId = customUser.getName();
 
         // 프론트엔드 URL로 리다이렉트할 때 임시로 필요한 정보 전달
         String frontendRedirectUrl = String.format(
-                "%s/login/success?accessToken=%s&refreshToken=%s&isNewMember=%b&kakaoId=%s",
-                FRONTEND_URL, accessToken, refreshToken, isNewMember, kakaoId);
+                "%s/login/success?accessToken=%s&refreshToken=%s&isNewMember=%b",
+                FRONTEND_URL, accessToken, refreshToken, isNewMember);
 
         // 프론트엔드로 리다이렉트
         redirectStrategy.sendRedirect(request, response, frontendRedirectUrl);

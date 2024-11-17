@@ -14,6 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Member findByKakaoId(Long kakaoId);
 
+    boolean existsByServiceId(String serviceId);
 
     @Query("SELECT m FROM Member m WHERE m.nickname LIKE :searchTerm% OR m.serviceId LIKE :searchTerm%")
     List<Member> findByNicknameOrUserIdStartsWith(@Param("searchTerm") String searchTerm);

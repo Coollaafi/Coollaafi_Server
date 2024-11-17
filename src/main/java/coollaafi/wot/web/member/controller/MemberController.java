@@ -6,7 +6,6 @@ import coollaafi.wot.web.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -41,7 +40,7 @@ public class MemberController {
     })
     public ApiResponse<MemberDTO.joinMemberResponseDTO> joinMember(
             @RequestPart("joinMemberDTO") MemberDTO.joinMemberDTO joinMemberDTO,
-            @RequestPart("profileImage") MultipartFile profileImage) throws IOException {// 예외 로그 추가
+            @RequestPart("profileImage") MultipartFile profileImage) {// 예외 로그 추가
         try {
             MemberDTO.joinMemberResponseDTO result = memberService.joinMember(joinMemberDTO, profileImage);
             return ApiResponse.onSuccess(result); // 성공 시 응답 반환
@@ -50,6 +49,17 @@ public class MemberController {
             // 실패 시 ApiResponse의 onFailure 메서드를 사용하여 응답 반환
             return ApiResponse.onFailure("500", "회원가입 중 오류가 발생했습니다.", null);
         }
+    }
+
+    @GetMapping("/check-service-id")
+    @Operation(summary = "서비스 ID 중복 검사", description = "회원가입 시 serviceId 중복 여부를 확인하는 API입니다. 중복일 경우에 true가 return 됩니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    public ApiResponse<Boolean> checkServiceId(@RequestParam("serviceId") String serviceId) {
+        boolean isDuplicate = memberService.isServiceIdDuplicate(serviceId);
+        return ApiResponse.onSuccess(isDuplicate);
     }
 
     @Operation(

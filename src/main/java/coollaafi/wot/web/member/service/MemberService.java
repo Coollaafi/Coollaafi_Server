@@ -27,7 +27,7 @@ public class MemberService {
 
     @Transactional
     public MemberDTO.joinMemberResponseDTO joinMember(MemberDTO.joinMemberDTO joinMemberDTO, MultipartFile profileImage)
-            throws IOException, InterruptedException {
+            throws IOException {
         Member member = memberRepository.findById(joinMemberDTO.getMemberId())
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
@@ -46,6 +46,11 @@ public class MemberService {
                 .nickname(member.getNickname())
                 .profileUrl(member.getProfileimage())
                 .build();
+    }
+
+    @Transactional
+    public boolean isServiceIdDuplicate(String serviceId) {
+        return memberRepository.existsByServiceId(serviceId);
     }
 
     @Transactional
