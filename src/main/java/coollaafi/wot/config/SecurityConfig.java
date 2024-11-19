@@ -1,5 +1,7 @@
 package coollaafi.wot.config;
 
+import coollaafi.wot.jwt.JwtTokenFilter;
+import coollaafi.wot.jwt.JwtTokenProvider;
 import coollaafi.wot.web.oauth2.CustomOAuth2UserService;
 import coollaafi.wot.web.oauth2.OAuth2LoginSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,7 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,9 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final JwtTokenProvider jwtTokenProvider; // JWT 토큰 제공자 추가
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtTokenProvider jwtTokenProvider) {
         this.customOAuth2UserService = customOAuth2UserService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Bean
@@ -46,7 +52,7 @@ public class SecurityConfig {
                                 "/member/healthcheck",
                                 "/login/**", "/oauth2/**", "/test", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/kakao/logout/withAccount",
-                                "/v3/api-docs", "/kakao", "/logout") // 인증 없이 접근 가능하도록 설정된 URL들
+                                "/v3/api-docs", "/kakao", "/logout, /refresh") // 인증 없이 접근 가능하도록 설정된 URL들
                         .permitAll()
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )
@@ -69,7 +75,11 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/") // 로그아웃 성공 시 이동할 URL
                         .deleteCookies("JSESSIONID") // 세션 쿠키 삭제
                         .invalidateHttpSession(true) // 세션 무효화
-                );
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
+                )
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
