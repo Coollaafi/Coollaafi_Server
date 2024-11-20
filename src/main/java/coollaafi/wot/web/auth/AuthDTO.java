@@ -14,7 +14,6 @@ public class AuthDTO {
     public static class LoginResponse {
         private String accessToken;
         private String refreshToken;
-        private Long memberId;
         public boolean isNewMember;
     }
 

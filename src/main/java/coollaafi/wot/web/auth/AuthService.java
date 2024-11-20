@@ -6,29 +6,14 @@ import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.repository.MemberRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final RestTemplate restTemplate;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
-
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
-    private String redirectUri;
-
-    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
-    private String tokenUri;
-
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
-    private String userInfoUri;
 
     public AuthDTO.LoginResponse kakaoLogin(Long kakaoId) {
         boolean isNewMember = false;
@@ -47,7 +32,7 @@ public class AuthService {
         member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 
-        return new AuthDTO.LoginResponse(accessToken, refreshToken, member.getId(), isNewMember);
+        return new AuthDTO.LoginResponse(accessToken, refreshToken, isNewMember);
     }
 
     private Member registerNewMember(Long kakaoId) {

@@ -62,15 +62,15 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // HTTP 요청에서 JWT 토큰을 가져와 사용자 ID 추출
-    public Long getUserIdFromToken(String token) {
-        JwtParser parser = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build();
-
-        Claims claims = parser.parseClaimsJws(token).getBody();
-        return Long.parseLong(claims.getSubject());
+    // Authorization 헤더에서 Bearer 토큰 추출
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
+
 
     // JWT 토큰이 유효한지 검증
     public boolean validateToken(String token) {
@@ -82,12 +82,13 @@ public class JwtTokenProvider {
         }
     }
 
-    // Authorization 헤더에서 Bearer 토큰 추출
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+    //  JWT 토큰에서 사용자 ID 추출
+    public Long getUserIdFromToken(String token) {
+        JwtParser parser = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build();
+
+        Claims claims = parser.parseClaimsJws(token).getBody();
+        return Long.parseLong(claims.getSubject());
     }
 }
