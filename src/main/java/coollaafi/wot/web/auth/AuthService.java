@@ -19,7 +19,10 @@ public class AuthService {
         boolean isMembershipRequired = false;
 
         Member member = memberRepository.findByKakaoId(kakaoId);
-        if (member == null || member.getNickname() == null) {
+        if (member == null) {
+            member = registerNewMember(kakaoId);
+            isMembershipRequired = true;
+        } else if (member.getNickname() == null) {
             member = registerNewMember(kakaoId);
             isMembershipRequired = true;
         }
