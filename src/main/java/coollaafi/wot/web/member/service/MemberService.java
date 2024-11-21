@@ -35,9 +35,14 @@ public class MemberService {
         member.setServiceId(joinMemberDTO.getServiceId());
         member.setNickname(joinMemberDTO.getNickname());
 
-        // 프로필 이미지 업로드
-        String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
-        member.setProfileimage(profileImageUrl);
+        if (profileImage != null && !profileImage.isEmpty()) {
+            // 프로필 이미지 업로드
+            String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
+            member.setProfileimage(profileImageUrl);
+        }
+        else {
+            member.setProfileimage(null);
+        }
 
         return MemberDTO.joinMemberResponseDTO.builder()
                 .memberId(member.getId())

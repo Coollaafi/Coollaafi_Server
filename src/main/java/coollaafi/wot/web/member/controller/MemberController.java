@@ -40,7 +40,7 @@ public class MemberController {
     })
     public ApiResponse<MemberDTO.joinMemberResponseDTO> joinMember(
             @RequestPart("joinMemberDTO") MemberDTO.joinMemberDTO joinMemberDTO,
-            @RequestPart("profileImage") MultipartFile profileImage) {// 예외 로그 추가
+            @RequestPart(name = "profileImage", required = false) MultipartFile profileImage) {// 예외 로그 추가
         try {
             MemberDTO.joinMemberResponseDTO result = memberService.joinMember(joinMemberDTO, profileImage);
             return ApiResponse.onSuccess(result); // 성공 시 응답 반환
