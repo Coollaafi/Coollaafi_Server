@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -43,10 +44,26 @@ public class MemberController {
             @RequestPart(name = "profileImage", required = false) MultipartFile profileImage) {// 예외 로그 추가
         try {
             MemberDTO.joinMemberResponseDTO result = memberService.joinMember(joinMemberDTO, profileImage);
-            return ApiResponse.onSuccess(result); // 성공 시 응답 반환
+            return ApiResponse.onSuccess(result);
         } catch (Exception e) {
             log.error("회원가입 처리 중 오류 발생: ", e);
-            // 실패 시 ApiResponse의 onFailure 메서드를 사용하여 응답 반환
+            return ApiResponse.onFailure("500", "회원가입 중 오류가 발생했습니다.", null);
+        }
+    }
+
+    @PutMapping(value = "/edit-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "사용자 프로필 사진 변경 API", description = "사용자의 프로필 사진을 변경하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<String> getUserInfo(
+            @RequestParam("memberId") Long memberId,
+            @RequestParam(name = "profileImage", required = false) MultipartFile profileImage) {
+        try {
+            String result = memberService.editProfile(memberId, profileImage);
+            return ApiResponse.onSuccess(result);
+        } catch (Exception e) {
+            log.error("회원가입 처리 중 오류 발생: ", e);
             return ApiResponse.onFailure("500", "회원가입 중 오류가 발생했습니다.", null);
         }
     }

@@ -53,6 +53,24 @@ public class MemberService {
                 .build();
     }
 
+    public String editProfile(Long memberId, MultipartFile profileImage)
+            throws IOException {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        String profileImageUrl = null;
+
+        if (profileImage != null && !profileImage.isEmpty()) {
+            amazonS3Manager.deleteFile(member.getProfileimage());
+            profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
+        }
+
+        member.setProfileimage(profileImageUrl);
+        memberRepository.save(member);
+
+        return profileImageUrl;
+    }
+
     @Transactional
     public boolean isServiceIdDuplicate(String serviceId) {
         return memberRepository.existsByServiceId(serviceId);
