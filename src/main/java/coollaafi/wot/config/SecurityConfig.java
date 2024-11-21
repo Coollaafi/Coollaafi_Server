@@ -57,7 +57,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login") // 사용자 지정 로그인 페이지 경로
                         .successHandler(new OAuth2LoginSuccessHandler()) // 성공 시 커스텀 핸들러
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService) // OAuth2 사용자 서비스 설정
