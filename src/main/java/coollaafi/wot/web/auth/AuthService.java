@@ -23,7 +23,6 @@ public class AuthService {
             member = registerNewMember(kakaoId);
             isMembershipRequired = true;
         } else if (member.getNickname() == null) {
-            member = registerNewMember(kakaoId);
             isMembershipRequired = true;
         }
 
