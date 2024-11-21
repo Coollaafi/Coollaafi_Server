@@ -16,12 +16,12 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     public AuthDTO.LoginResponse kakaoLogin(Long kakaoId) {
-        boolean isNewMember = false;
+        boolean isMembershipRequired = false;
 
         Member member = memberRepository.findByKakaoId(kakaoId);
-        if (member == null) {
+        if (member == null || member.getNickname() == null) {
             member = registerNewMember(kakaoId);
-            isNewMember = true;
+            isMembershipRequired = true;
         }
 
         // JWT 토큰 생성
@@ -32,7 +32,7 @@ public class AuthService {
         member.setRefreshToken(refreshToken);
         memberRepository.save(member);
 
-        return new AuthDTO.LoginResponse(accessToken, refreshToken, isNewMember);
+        return new AuthDTO.LoginResponse(accessToken, refreshToken, isMembershipRequired, member.getId());
     }
 
     private Member registerNewMember(Long kakaoId) {
@@ -55,10 +55,10 @@ public class AuthService {
         }
 
         // 2. Refresh Token에서 사용자 ID 추출
-        Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        Long memberId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
         // 3. 사용자 조회
-        Member member = memberRepository.findById(userId).orElse(null);
+        Member member = memberRepository.findById(memberId).orElse(null);
         if (member == null || !member.getRefreshToken().equals(refreshToken)) {
             return null; // 사용자나 토큰 불일치 시 null 반환
         }

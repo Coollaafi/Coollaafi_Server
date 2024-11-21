@@ -12,13 +12,17 @@ public class CustomOAuth2User implements OAuth2User {
     private final String accessToken;
     @Getter
     private final String refreshToken;
-    private final boolean isNewMember;
+    @Getter
+    private final boolean isMembershipRequired;
+    @Getter
+    private final Long memberId;
 
-    public CustomOAuth2User(OAuth2User oAuth2User, String accessToken, String refreshToken, boolean isNewMember) {
+    public CustomOAuth2User(OAuth2User oAuth2User, String accessToken, String refreshToken, boolean isMembershipRequired, Long memberId) {
         this.oAuth2User = oAuth2User;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.isNewMember = isNewMember;
+        this.isMembershipRequired = isMembershipRequired;
+        this.memberId = memberId;
     }
 
     @Override
@@ -37,9 +41,5 @@ public class CustomOAuth2User implements OAuth2User {
         Map<String, Object> attributes = oAuth2User.getAttributes();
         return (String) attributes.getOrDefault("name",
                 attributes.getOrDefault("nickname", String.valueOf(attributes.get("id"))));
-    }
-
-    public boolean isNewMember() {
-        return isNewMember;
     }
 }

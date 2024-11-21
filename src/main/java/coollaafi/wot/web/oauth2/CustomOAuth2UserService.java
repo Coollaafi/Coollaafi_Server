@@ -28,6 +28,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // AuthService의 kakaoLogin 호출하여 사용자 등록 및 JWT 생성
         AuthDTO.LoginResponse loginResponse = authService.kakaoLogin(kakaoId);
         return new CustomOAuth2User(oAuth2User, loginResponse.getAccessToken(), loginResponse.getRefreshToken(),
-                loginResponse.isNewMember());
+                loginResponse.isMembershipRequired(), loginResponse.getMemberId());
     }
 }

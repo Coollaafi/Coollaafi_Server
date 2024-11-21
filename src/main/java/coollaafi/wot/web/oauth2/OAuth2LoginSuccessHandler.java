@@ -24,12 +24,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         // JSON 응답 생성
         String accessToken = customUser.getAccessToken();
         String refreshToken = customUser.getRefreshToken();
-        boolean isNewMember = customUser.isNewMember();
+        boolean isMembershipRequired = customUser.isMembershipRequired();
+        Long memberId = customUser.getMemberId();
 
         // 프론트엔드 URL로 리다이렉트할 때 임시로 필요한 정보 전달
         String frontendRedirectUrl = String.format(
-                "%s/login/success?accessToken=%s&refreshToken=%s&isNewMember=%b",
-                FRONTEND_URL, accessToken, refreshToken, isNewMember);
+                "%s/login/success?accessToken=%s&refreshToken=%s&isMembershipRequired=%b&memberId=%d",
+                FRONTEND_URL, accessToken, refreshToken, isMembershipRequired, memberId);
 
         // 프론트엔드로 리다이렉트
         redirectStrategy.sendRedirect(request, response, frontendRedirectUrl);

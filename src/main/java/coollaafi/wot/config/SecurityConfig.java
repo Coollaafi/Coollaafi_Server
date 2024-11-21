@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "/member/healthcheck",
                                 "/login/**", "/oauth2/**", "/test", "/swagger-ui/**",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/kakao/logout/withAccount",
-                                "/v3/api-docs", "/kakao", "/logout, /refresh") // 인증 없이 접근 가능하도록 설정된 URL들
+                                "/v3/api-docs", "/kakao", "/logout", "/auth/refresh") // 인증 없이 접근 가능하도록 설정된 URL들
                         .permitAll()
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )
