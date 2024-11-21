@@ -61,7 +61,7 @@ public class MemberService {
         String profileImageUrl = null;
 
         if (profileImage != null && !profileImage.isEmpty()) {
-            amazonS3Manager.deleteFile(member.getProfileimage());
+//            amazonS3Manager.deleteFile(member.getProfileimage());
             profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
         }
 
