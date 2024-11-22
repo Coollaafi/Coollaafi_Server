@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class MetadataExtractor {
     private final KakaoAddressService kakaoAddressService;
 
+    private static final double DEFAULT_LAT = 37.5665;  // 서울
+    private static final double DEFAULT_LON = 126.9780; // 서울
+
     public MetadataDTO extract(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
             // 메타데이터 추출
@@ -32,7 +35,7 @@ public class MetadataExtractor {
             // 주소 검색 수행
             String address = kakaoAddressService.getAddressFromCoordinates(latitude, longitude);
 
-            return new MetadataDTO(address, captureDate);
+            return new MetadataDTO(address, captureDate, latitude, longitude);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -59,13 +62,13 @@ public class MetadataExtractor {
         GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
         return gpsDirectory != null && gpsDirectory.getGeoLocation() != null
                 ? gpsDirectory.getGeoLocation().getLatitude()
-                : 37.57636667; // 기본값
+                : DEFAULT_LAT; // 기본값
     }
 
     private double extractLongitude(Metadata metadata) {
         GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
         return gpsDirectory != null && gpsDirectory.getGeoLocation() != null
                 ? gpsDirectory.getGeoLocation().getLongitude()
-                : 126.9388972; // 기본값
+                : DEFAULT_LON; // 기본값
     }
 }
