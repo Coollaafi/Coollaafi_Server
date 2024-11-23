@@ -88,7 +88,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Void setAlias(Member member) {
+    public void setAlias(Member member) {
         Long imageCount = ootdImageRepository.countPhotoByMember(member);
 
         // 이미지 개수를 기준으로 Alias를 가져옴
@@ -98,7 +98,6 @@ public class MemberService {
         member.setAlias(alias);
 
         memberRepository.save(member);
-        return null;
     }
 
     @Transactional
