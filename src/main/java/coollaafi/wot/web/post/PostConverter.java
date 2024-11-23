@@ -46,6 +46,8 @@ public class PostConverter {
                 .lookbook_url(post.getLookbookImage())
                 .postCondition(post.getPostCondition())
                 .address(extractCityAndDistrict(post.getOotdImage().getAddress()))
+                .tmax(post.getOotdImage().getTmax())
+                .tmin(post.getOotdImage().getTmin())
                 .createdAt(post.getCreatedAt())
                 .preferCount(postPreferRepository.countByPost(post))
                 .commentCount(commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post))
