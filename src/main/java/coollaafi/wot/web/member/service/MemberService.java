@@ -75,6 +75,19 @@ public class MemberService {
     }
 
     @Transactional
+    public void editNicknameAndId(MemberDTO.joinMemberDTO joinMemberDTO) {
+        Member member = memberRepository.findById(joinMemberDTO.getMemberId())
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 멤버 정보 업데이트
+        member.setServiceId(joinMemberDTO.getServiceId());
+        member.setNickname(joinMemberDTO.getNickname());
+
+        memberRepository.save(member);
+    }
+
+
+    @Transactional
     public boolean isServiceIdDuplicate(String serviceId) {
         return memberRepository.existsByServiceId(serviceId);
     }

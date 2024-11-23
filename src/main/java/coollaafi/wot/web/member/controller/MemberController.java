@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -66,6 +67,18 @@ public class MemberController {
             return ApiResponse.onFailure("500", "프로필 변경 중 오류가 발생했습니다.", null);
         }
     }
+
+    @PostMapping(value = "/edit-nickname-id")
+    @Operation(summary = "사용자 닉네임 및 아이디 변경 API", description = "사용자의 nickname, serviceId 변경하는 API입니다")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
+    })
+    public ApiResponse<Void> editNicknameAndServiceId(
+            @RequestBody MemberDTO.joinMemberDTO editMemberDTO) {
+        memberService.editNicknameAndId(editMemberDTO);
+        return ApiResponse.onSuccess(null);
+    }
+
 
     @GetMapping("/check-service-id")
     @Operation(summary = "서비스 ID 중복 검사", description = "회원가입 시 serviceId 중복 여부를 확인하는 API입니다. 중복일 경우에 true가 return 됩니다.")
