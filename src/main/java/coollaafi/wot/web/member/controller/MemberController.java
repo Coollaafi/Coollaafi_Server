@@ -51,11 +51,11 @@ public class MemberController {
     }
 
     @PostMapping(value = "/edit-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "사용자 프로필 사진 변경 API", description = "사용자의 프로필 사진을 변경하는 API입니다.")
+    @Operation(summary = "사용자 프로필 사진 변경 API", description = "사용자의 프로필 사진을 변경하는 API입니다. 기본 이미지로 변경 시 profileImage를 넣지 않고 호출해주세요")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<String> getUserInfo(
+    public ApiResponse<String> editProfile(
             @RequestParam("memberId") Long memberId,
             @RequestParam(name = "profileImage", required = false) MultipartFile profileImage) {
         try {

@@ -58,11 +58,16 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        if (profileImage != null && !profileImage.isEmpty()) {
+        String profileImageUrl = null;
+
+        if (member.getProfileimage() != null) {
             amazonS3Manager.deleteFile(member.getProfileimage());
         }
 
-        String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
+        if (profileImage != null && !profileImage.isEmpty()) {
+            profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
+        }
+
         member.setProfileimage(profileImageUrl);
         memberRepository.save(member);
 
