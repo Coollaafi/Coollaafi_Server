@@ -13,6 +13,7 @@ import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.uploadOOTD;
 import coollaafi.wot.web.post.Category;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -50,14 +51,18 @@ public class OotdImageService {
 
         // DB에 이미지와 날씨 정보 저장
         WeatherData weatherData = new WeatherData();
-        saveOotdImage(member, weatherData, ootdImageUrl, metadata);
+        OotdImage saveOotdImage= saveOotdImage(member, weatherData, ootdImageUrl, metadata);
 
-        List<String> collageImagesUrl = new ArrayList<>();
-        for (String url : collageImagesUrl) {
-            collageImageService.saveCollageImage(member, url, weatherData);
-        }
+        List<String> collageImagesUrl = new ArrayList<>(Arrays.asList(
+                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7379993212_shoes.jpg",
+                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7868912374_bottom.jpg",
+                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes4767268203_top.jpg"));
 
-        return new uploadOOTD(ootdImageUrl, collageImagesUrl);
+//        for (String url : collageImagesUrl) {
+//            collageImageService.saveCollageImage(member, url, weatherData);
+//        }
+
+        return new uploadOOTD(saveOotdImage.getId(), collageImagesUrl);
     }
 
     @Transactional

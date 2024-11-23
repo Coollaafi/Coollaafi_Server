@@ -25,7 +25,7 @@ public class OotdImageResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class uploadOOTD {
-        private String ootdImage;
+        private Long ootdImageId;
         private List<String> collageImages;
     }
 }
