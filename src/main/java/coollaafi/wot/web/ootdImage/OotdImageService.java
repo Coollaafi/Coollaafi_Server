@@ -11,6 +11,7 @@ import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.MetadataDTO;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.uploadOOTD;
 import coollaafi.wot.web.post.Category;
+import coollaafi.wot.web.post.WeatherService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,7 @@ public class OotdImageService {
 
         MetadataDTO metadata = metadataExtractor.extract(ootdImage);
 
+
         if (metadata == null) {
             throw new RuntimeException("메타데이터 추출 실패");
         }
@@ -73,6 +75,8 @@ public class OotdImageService {
                 .member(member)
                 .tmin(weatherData.getTmin())
                 .tmax(weatherData.getTmax())
+                .weather_description(metadata.getDescription())
+                .weather_icon(metadata.getImageUrl())
                 .address(metadata.getAddress())
                 .date(metadata.getDate())
                 .build();

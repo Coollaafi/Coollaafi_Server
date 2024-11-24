@@ -17,6 +17,8 @@ public class OotdImageResponseDTO {
     public static class MetadataDTO {
         private String address;
         private LocalDateTime date;
+        private String description;
+        private String imageUrl;
     }
 
     @Builder
