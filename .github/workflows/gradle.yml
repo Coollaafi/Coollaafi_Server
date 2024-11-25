@@ -36,6 +36,8 @@ jobs:
           sed -i 's|${KAKAO_CLIENT_SECRET}|'"${{ secrets.KAKAO_CLIENT_SECRET }}"'|g' application-prod.yml
           sed -i 's|${EC2_HOST}|'"${{ secrets.EC2_HOST }}"'|g' application-prod.yml
           sed -i 's|${JWT_SECRET_KEY}|'"${{ secrets.JWT_SECRET_KEY }}"'|g' application-prod.yml
+          sed -i 's|${WEATHER_API_KEY}|'"${{ secrets.WEATHER_API_KEY }}"'|g' application-prod.yml
+
 
       - name: Grant permission
         run: chmod +x ./gradlew
@@ -74,4 +76,5 @@ jobs:
                             -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
                             -e EC2_HOST=${{ secrets.EC2_HOST }} \
                             -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+                            -e JWT_SECRET_KEY=${{ secrets.WEATHER_API_KEY }} \
                             --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
