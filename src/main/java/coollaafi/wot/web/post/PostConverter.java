@@ -53,7 +53,7 @@ public class PostConverter {
                 .createdAt(post.getCreatedAt())
                 .preferCount(postPreferRepository.countByPost(post))
                 .commentCount(commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post))
-                .isLikedByMember(postPreferRepository.existsByPostAndMember(post, member))
+                .isLikedByMember(postPreferRepository.existsByMemberAndPost(member, post))
                 .build();
     }
 
