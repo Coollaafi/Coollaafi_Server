@@ -25,6 +25,7 @@ public class MemberConverter {
                 .nextAlias(member.getAlias().getNextAlias())
                 .photosUntilNextAlias(
                         member.getAlias().getPhotosForNext() - ootdImageRepository.countPhotoByMember(member))
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 
