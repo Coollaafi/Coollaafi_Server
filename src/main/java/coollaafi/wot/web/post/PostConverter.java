@@ -86,8 +86,10 @@ public class PostConverter {
         CalendarDTO calendarDTO = new CalendarDTO();
 
         for (Post post : posts) {
-            CalendarDTO.Day day = new CalendarDTO.Day(post.getCreatedAt().toLocalDate(), post.getLookbookImage(),
-                    post.getId());  // Day 객체 생성
+            CalendarDTO.Day day = new CalendarDTO.Day(
+                    post.getCreatedAt().toLocalDate(),
+                    post.getLookbookImage(),
+                    post.getId());
             calendarDTO.addDay(day);
         }
 
