@@ -39,8 +39,7 @@ public class MemberService {
             // 프로필 이미지 업로드
             String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
             member.setProfileimage(profileImageUrl);
-        }
-        else {
+        } else {
             member.setProfileimage(null);
         }
 
@@ -117,15 +116,6 @@ public class MemberService {
     public List<MemberDTO.MemberBasedDTO> searchMembers(String searchTerm) {
         List<Member> searchMembers = memberRepository.findByNicknameOrUserIdStartsWith(searchTerm);
         return searchMembers.stream()
-                .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
-    }
-
-    // 특정 멤버의 친구 목록을 조회
-    @Transactional
-    public List<MemberDTO.MemberBasedDTO> getFriends(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        return member.getFriends().stream()
                 .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
     }
 }

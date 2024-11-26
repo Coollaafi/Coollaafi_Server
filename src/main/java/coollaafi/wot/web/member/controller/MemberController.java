@@ -25,9 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberService memberService;
-
     private static final Logger log = LoggerFactory.getLogger(MemberController.class);
+    private final MemberService memberService;
 
     @GetMapping("/healthcheck")
     public String healthcheck() {
@@ -106,23 +105,12 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "친구 검색 API", description = "친구 요청을 위해 검색할 때 사용하는 API입니다. 해당 query로 시작하는 nickname, serviceId를 가진 멤버 정보가 조회됩니다.")
+    @Operation(summary = "친구 검색 API", description = "친구를 검색할 때 사용하는 API입니다. 해당 query로 시작하는 nickname, serviceId를 가진 멤버 정보가 조회됩니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
     public ApiResponse<List<MemberDTO.MemberBasedDTO>> searchMembers(@RequestParam("query") String query) {
         List<MemberDTO.MemberBasedDTO> members = memberService.searchMembers(query);
         return ApiResponse.onSuccess(members);
-    }
-
-    // 친구 목록을 조회하는 API
-    @GetMapping("/{memberId}/friends")
-    @Operation(summary = "친구 목록 조회 API", description = "친구 목록 조회시 사용하는 API입니다.")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
-    })
-    public ApiResponse<List<MemberDTO.MemberBasedDTO>> getFriends(@PathVariable("memberId") Long memberId) {
-        List<MemberDTO.MemberBasedDTO> friends = memberService.getFriends(memberId);
-        return ApiResponse.onSuccess(friends);
     }
 }
