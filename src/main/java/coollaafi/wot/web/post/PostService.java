@@ -4,7 +4,7 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.comment.CommentService;
-import coollaafi.wot.web.friendship.FollowRepository;
+import coollaafi.wot.web.friendship.FriendshipRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -26,7 +26,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostConverter postConverter;
     private final MemberRepository memberRepository;
-    private final FollowRepository followRepository;
+    private final FriendshipRepository friendshipRepository;
     private final CommentService commentService;
     private final MemberService memberService;
     private final AmazonS3Manager amazonS3Manager;
@@ -54,7 +54,7 @@ public class PostService {
         // 멤버를 찾고, 친구 목록을 가져오기
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
-        List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
+        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
 
         // 친구 목록에 자신을 추가
         friends.add(member);
@@ -74,7 +74,7 @@ public class PostService {
         // 멤버와 친구 목록 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
+        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
 
         // 친구 목록에 자신을 추가
         friends.add(member);
