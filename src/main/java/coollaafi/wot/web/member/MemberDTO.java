@@ -12,6 +12,7 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberBasedDTO {
+        private Long memberId;
         private String memberServiceId;
         private String memberNickName;
         private String memberImage;
