@@ -34,8 +34,7 @@ public class OotdImageController {
             OotdImageResponseDTO.uploadOOTD segmentImages = ootdImageService.segmentImage(memberId, ootdImage,
                     categorySet);
             return ResponseEntity.ok()
-                    .header("Access-Control-Allow-Origin", "*")
-                    .contentType(MediaType.IMAGE_JPEG)
+                    .header("Access-Control-Allow-Origin")
                     .body(segmentImages);
         } catch (Exception e) {
             throw new RuntimeException(e);
