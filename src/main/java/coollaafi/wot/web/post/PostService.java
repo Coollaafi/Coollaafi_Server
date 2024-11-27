@@ -41,7 +41,7 @@ public class PostService {
         OotdImage ootdImage = ootdImageRepository.findById(requestDTO.getOotdImageId())
                 .orElseThrow(() -> new OotdImageHandler(ErrorStatus.OOTD_NOT_FOUND));
 
-        String lookbookUrl = amazonS3Manager.uploadFile("/lookbook", lookbookImage, member.getKakaoId());
+        String lookbookUrl = amazonS3Manager.uploadFile("lookbook/", lookbookImage, member.getKakaoId());
 
         Post post = postConverter.toEntity(requestDTO, member, ootdImage, lookbookUrl);
         postRepository.save(post);

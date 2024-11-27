@@ -11,7 +11,6 @@ import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.MetadataDTO;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.uploadOOTD;
 import coollaafi.wot.web.post.Category;
-import coollaafi.wot.web.post.WeatherService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,16 +43,15 @@ public class OotdImageService {
 
         MetadataDTO metadata = metadataExtractor.extract(ootdImage);
 
-
         if (metadata == null) {
             throw new RuntimeException("메타데이터 추출 실패");
         }
 
-        String ootdImageUrl = amazonS3Manager.uploadFile("/ootd", ootdImage, member.getKakaoId());
+        String ootdImageUrl = amazonS3Manager.uploadFile("ootd/", ootdImage, member.getKakaoId());
 
         // DB에 이미지와 날씨 정보 저장
         WeatherData weatherData = new WeatherData();
-        OotdImage saveOotdImage= saveOotdImage(member, weatherData, ootdImageUrl, metadata);
+        OotdImage saveOotdImage = saveOotdImage(member, weatherData, ootdImageUrl, metadata);
 
         List<String> collageImagesUrl = new ArrayList<>(Arrays.asList(
                 "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7379993212_shoes.jpg",
