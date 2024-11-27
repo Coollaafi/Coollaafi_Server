@@ -73,11 +73,22 @@ public class AIService {
         try {
             return makePostRequest(apiUrl);
         } catch (RuntimeException e) {
-            if (extractErrorDetail(e.getMessage()).equals("날씨 정보를 찾을 수 없습니다.")) {
+            if (isWeatherDataNotFoundError(e)) {
                 log.warn("Weather data not found. Retrying with default coordinates...");
                 return retryWithDefaultCoordinates(memberId, date);
             }
             throw e;
+        }
+    }
+
+    private boolean isWeatherDataNotFoundError(RuntimeException e) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(e.getMessage());
+            String detailMessage = rootNode.path("result").asText();
+            return detailMessage.contains("날씨 정보를 찾을 수 없습니다.");
+        } catch (Exception parseException) {
+            log.warn("Failed to parse error message: {}", e.getMessage());
+            return false;
         }
     }
 
@@ -177,12 +188,17 @@ public class AIService {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.POST, requestEntity, String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
-        } else {
-            throw new RuntimeException("Failed to call API: " + response.getBody());
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.POST, requestEntity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to call API: " + response.getBody());
+            }
+        } catch (Exception e) {
+            log.error("Error calling API at endpoint: {}. Exception: {}", endpoint, e.getMessage());
+            throw new RuntimeException("Failed to call API", e);
         }
     }
 }
+
