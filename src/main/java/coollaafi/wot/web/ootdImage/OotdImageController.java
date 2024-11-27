@@ -1,12 +1,12 @@
 package coollaafi.wot.web.ootdImage;
 
+import coollaafi.wot.apiPayload.ApiResponse;
 import coollaafi.wot.web.post.Category;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,16 +26,14 @@ public class OotdImageController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ResponseEntity<OotdImageResponseDTO.uploadOOTD> createLookBookPost(
+    public ApiResponse<OotdImageResponseDTO.uploadOOTD> createLookBookPost(
             @RequestParam("memberId") Long memberId,
             @RequestParam("ootdImage") MultipartFile ootdImage,
             @RequestParam("categorySet") Set<Category> categorySet) {
         try {
             OotdImageResponseDTO.uploadOOTD segmentImages = ootdImageService.segmentImage(memberId, ootdImage,
                     categorySet);
-            return ResponseEntity.ok()
-                    .header("Access-Control-Allow-Origin")
-                    .body(segmentImages);
+            return ApiResponse.onSuccess(segmentImages);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
