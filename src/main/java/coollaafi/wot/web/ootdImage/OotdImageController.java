@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/ootd")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "https://coollaafi.shop"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://coollaafi.shop", "https://coollaafi-frontend.vercel.app",})
 public class OotdImageController {
     private final OotdImageService ootdImageService;
 
