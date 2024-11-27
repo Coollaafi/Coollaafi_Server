@@ -13,7 +13,12 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -25,29 +30,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 @RequiredArgsConstructor
 public class AIService {
-    private final RestTemplate restTemplate;
-
-    @Value("${external-api.ai-api.url}")
-    private String baseUrl;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     private static final double DEFAULT_LAT = 37.5665;  // 서울
     private static final double DEFAULT_LON = 126.9780; // 서울
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${external-api.ai-api.url}")
+    private String baseUrl;
 
     @Transactional
     public String callSegmentApi(MultipartFile image, Set<Category> categorySet) throws Exception {
         // Prepare category list
-        String classes = "\"" + categorySet.stream()
+        String classes = categorySet.stream()
                 .map(Category::getAIName)
-                .collect(Collectors.joining(",")) + "\"";
+                .collect(Collectors.joining(","));
 
         // Build request body
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("image",
                 new MultipartInputStreamFileResource(image.getInputStream(), image.getOriginalFilename()));
         requestBody.add("classes", classes);
-
+        log.info(classes);
         return makePostRequest(baseUrl + "/segment", requestBody);
     }
 
@@ -154,6 +156,7 @@ public class AIService {
 
     private List<String> parseJsonArray(String apiResponse, String fieldName) {
         try {
+            log.debug("Parsing weather API response: {}", apiResponse);
             JsonNode rootNode = objectMapper.readTree(apiResponse);
             JsonNode arrayNode = rootNode.get(fieldName);
 
@@ -189,7 +192,8 @@ public class AIService {
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.POST, requestEntity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.POST, requestEntity,
+                    String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 return response.getBody();
             } else {
