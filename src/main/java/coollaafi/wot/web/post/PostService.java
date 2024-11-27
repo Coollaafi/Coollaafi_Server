@@ -56,6 +56,9 @@ public class PostService {
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
         List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
 
+        // 친구 목록에 자신을 추가
+        friends.add(member);
+
         // 현재 시점에서 일주일 전 시간
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
@@ -71,6 +74,9 @@ public class PostService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
         List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
+
+        // 친구 목록에 자신을 추가
+        friends.add(member);
 
         // 현재 시점에서 일주일 전 시간
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
