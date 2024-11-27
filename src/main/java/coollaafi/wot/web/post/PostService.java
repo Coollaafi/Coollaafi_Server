@@ -63,7 +63,8 @@ public class PostService {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 
         // 친구들의 일주일 이내 게시글 조회
-        List<Post> postList = postRepository.findAllByFriendsAndDate(friends, oneWeekAgo);
+        List<Post> postList = postRepository.findAllByMemberInAndCreatedAtAfterOrderByCreatedAtDesc(friends,
+                oneWeekAgo);
 
         return postConverter.toGetAllPostDTO(postList, member);
     }

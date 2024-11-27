@@ -10,15 +10,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query("SELECT p FROM Post p WHERE p.member IN :friends AND p.createdAt >= :oneWeekAgo")
-    List<Post> findAllByFriendsAndDate(
-            @Param("friends") List<Member> friends,
-            @Param("oneWeekAgo") LocalDateTime oneWeekAgo);
+    List<Post> findAllByMemberInAndCreatedAtAfterOrderByCreatedAtDesc(List<Member> member, LocalDateTime createdAt);
 
     @Query("SELECT p FROM Post p JOIN p.ootdImage oi " +
             "WHERE p.member IN :friends " +
             "AND p.createdAt >= :oneWeekAgo " +
-            "AND oi.address LIKE CONCAT(:cityAndDistrict, '%')")
+            "AND oi.address LIKE CONCAT(:cityAndDistrict, '%')" +
+            "ORDER BY p.createdAt DESC")
     List<Post> findAllByFriendsAndDateAndAddress(@Param("friends") List<Member> friends,
                                                  @Param("oneWeekAgo") LocalDateTime oneWeekAgo,
                                                  @Param("cityAndDistrict") String cityAndDistrict);
