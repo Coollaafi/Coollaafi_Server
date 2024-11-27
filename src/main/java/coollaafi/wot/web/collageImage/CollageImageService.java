@@ -1,7 +1,17 @@
 package coollaafi.wot.web.collageImage;
 
+import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.web.member.entity.Member;
+import coollaafi.wot.web.member.handler.MemberHandler;
+import coollaafi.wot.web.member.repository.MemberRepository;
+import coollaafi.wot.web.weatherData.WeatherData;
 import jakarta.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CollageImageService {
     private final CollageImageRepository collageImageRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public CollageImage saveCollageImage(Member member, String s3url, WeatherData weatherData) {
@@ -26,16 +37,34 @@ public class CollageImageService {
     }
 
     @Transactional
-    public List<String> recommendOutfit(Long memberId, Double latitude, Double longitude) {
-        return new ArrayList<>(Arrays.asList(
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7379993212_shoes.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7868912374_bottom.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes4767268203_top.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7379993212_shoes.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7868912374_bottom.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes4767268203_top.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7379993212_shoes.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes7868912374_bottom.jpg",
-                "https://wot-bucket.s3.ap-northeast-2.amazonaws.com/segmented_img/jacket%2Cblouse%2Cskirt%2Cshoes4767268203_top.jpg"));  // 사진과 메타데이터 저장
+    public List<String> getCollageImageByDate(Long memberId, List<String> dates) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        List<Date> convertedDates = convertStringsToDates(dates);
+
+        List<CollageImage> collageImages = new ArrayList<>();
+        for (Date date : convertedDates) {
+            collageImages.addAll(
+                    collageImageRepository.findCollageImageByMemberAndWeatherData_Date(member, date)
+            );
+        }
+
+        return collageImages.stream()
+                .map(CollageImage::getS3url) // Assuming CollageImage has a getUrl() method
+                .collect(Collectors.toList());
+    }
+
+    private List<Date> convertStringsToDates(List<String> dateStrings) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Ensure this matches your date format
+        List<Date> dateList = new ArrayList<>();
+        for (String dateString : dateStrings) {
+            try {
+                dateList.add(dateFormat.parse(dateString)); // Convert String to Date
+            } catch (ParseException e) {
+                throw new RuntimeException("Invalid date format: " + dateString, e);
+            }
+        }
+        return dateList;
     }
 }
