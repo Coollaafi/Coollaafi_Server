@@ -37,6 +37,9 @@ jobs:
           sed -i 's|${EC2_HOST}|'"${{ secrets.EC2_HOST }}"'|g' application-prod.yml
           sed -i 's|${JWT_SECRET_KEY}|'"${{ secrets.JWT_SECRET_KEY }}"'|g' application-prod.yml
           sed -i 's|${WEATHER_API_KEY}|'"${{ secrets.WEATHER_API_KEY }}"'|g' application-prod.yml
+          sed -i 's|${DOMAIN_NAME}|'"${{ secrets.WEATHER_API_KEY }}"'|g' application-prod.yml
+          sed -i 's|${AI_URL}|'"${{ secrets.AI_URL }}"'|g' application-prod.yml
+          sed -i 's|${FRONTEND_URL}|'"${{ secrets.FRONTEND_URL }}"'|g' application-prod.yml
 
 
       - name: Grant permission
@@ -77,4 +80,7 @@ jobs:
                             -e EC2_HOST=${{ secrets.EC2_HOST }} \
                             -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
                             -e JWT_SECRET_KEY=${{ secrets.WEATHER_API_KEY }} \
+                            -e DOMAIN_NAME=${{ secrets.DOMAIN_NAME }} \
+                            -e AI_URL=${{ secrets.AI_URL }} \
+                            -e FRONTEND_URL=${{ secrets.FRONTEND_URL }} \
                             --name wot-server -p 8080:8080 -d ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}

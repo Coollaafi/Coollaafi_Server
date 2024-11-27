@@ -3,6 +3,7 @@ package coollaafi.wot.web.oauth2;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -11,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
-    private static final String FRONTEND_URL = "http://localhost:3000"; // 프론트엔드 URL
-
     // RedirectStrategy 객체를 직접 생성
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    @Value("${external-api.frontend.url}")
+    private String FRONTEND_URL;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
