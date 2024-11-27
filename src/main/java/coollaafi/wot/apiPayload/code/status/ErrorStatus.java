@@ -38,6 +38,9 @@ public enum ErrorStatus implements BaseErrorCode {
     //OOTD
     OOTD_NOT_FOUND(HttpStatus.NOT_FOUND, "OOTD001", "존재하지 OOTD 이미지입니다."),
 
+    //WEATHERDATA
+    WEATHERDATA_NOT_FOUND(HttpStatus.NOT_FOUND, "WEATHER001", "존재하지 않는 날씨 정보입니다."),
+
     //추가
     ;
 

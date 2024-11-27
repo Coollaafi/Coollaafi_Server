@@ -1,5 +1,6 @@
-package coollaafi.wot.web.collageImage;
+package coollaafi.wot.web.weatherData;
 
+import coollaafi.wot.web.collageImage.CollageImage;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
