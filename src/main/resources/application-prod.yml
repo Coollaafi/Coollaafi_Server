@@ -54,5 +54,7 @@ cloud:
       secretKey: ${S3_SECRET_KEY}
 
 external-api:
+  ai-api:
+    url: http://54.224.95.145:8000
   weather-api:
     key: ${WEATHER_API_KEY}
