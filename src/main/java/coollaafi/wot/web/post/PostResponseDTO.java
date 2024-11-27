@@ -30,6 +30,7 @@ public class PostResponseDTO {
         private String address;
         private Float tmin;
         private Float tmax;
+        private String weather_description;
         private String weather_icon_url;
         private PostCondition postCondition;
         private LocalDateTime createdAt;

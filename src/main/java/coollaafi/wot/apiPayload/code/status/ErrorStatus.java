@@ -17,19 +17,20 @@ public enum ErrorStatus implements BaseErrorCode {
 
     //MEMBER
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER001", "존재하지 않는 유저입니다."),
-    SENDER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER002", "Sender가 존재하지 않습니다"),
-    RECEIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER003", "Receiver가 존재하지 않습니다."),
+    FOLLOWER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER002", "팔로워 회원이 존재하지 않습니다"),
+    FOLLOWEE_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER003", "팔로우할 회원이 존재하지 않습니다."),
+
+    //FOLLOW
+    FOLLOW_NOT_FOUND(HttpStatus.NOT_FOUND, "FOLLOW001", "팔로우 기록이 존재하지 않습니다."),
+    FOLLOWER_EQUAL_FOLLOWEE(HttpStatus.NOT_FOUND, "FOLLOW002", "자기 자신을 팔로우 할 수 없습니다."),
+    LIMIT_FOLLOW(HttpStatus.NOT_FOUND, "FOLLOW003", "팔로우는 최대 20명까지만 가능합니다."),
+    ALREADY_FOLLOWING(HttpStatus.NOT_FOUND, "FOLLOW004", "이미 팔로우 중입니다."),
 
     //POST
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST001", "존재하지 않는 게시글입니다."),
 
     //POST-PREFER
     POST_PREFER_NOT_FOUND(HttpStatus.NOT_FOUND, "POSTPREFER001", "존재하지 않는 좋아요입니다."),
-
-    //FRIENDS
-    FRIEND_REQUEST_ALREADY_EXIST(HttpStatus.NOT_FOUND, "FRIEND001", "이미 존재하는 친구 요청입니다."),
-    FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIEND002", "존재하지 않는 친구 요청입니다."),
-    FRIEND_REQUEST_ALREADY_PROCESSED(HttpStatus.NOT_FOUND, "FRIEND002", "이미 완료된 친구 요청입니다."),
 
     //COMMENT
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT001", "존재하지 않는 댓글입니다."),

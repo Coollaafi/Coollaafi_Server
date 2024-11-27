@@ -5,6 +5,8 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.MetadataDTO;
+import coollaafi.wot.web.post.WeatherResponse;
+import coollaafi.wot.web.post.WeatherService;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MetadataExtractor {
     private final KakaoAddressService kakaoAddressService;
+    private final WeatherService weatherService;
 
     private static final double DEFAULT_LAT = 37.5665;  // 서울
     private static final double DEFAULT_LON = 126.9780; // 서울
@@ -35,7 +38,9 @@ public class MetadataExtractor {
             // 주소 검색 수행
             String address = kakaoAddressService.getAddressFromCoordinates(latitude, longitude);
 
-            return new MetadataDTO(address, captureDate, latitude, longitude);
+            WeatherResponse weather_info = weatherService.getWeatherByCoordinates(latitude, longitude);
+
+            return new MetadataDTO(address, captureDate, latitude, longitude, weather_info.getDescription(), weather_info.getIconUrl());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

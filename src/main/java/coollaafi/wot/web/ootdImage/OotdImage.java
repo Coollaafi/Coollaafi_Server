@@ -34,7 +34,9 @@ public class OotdImage {
 
     private Float tmax;
 
-    private String icon_url;
+    private String weather_description;
+
+    private String weather_icon;
 
     private String address;
 

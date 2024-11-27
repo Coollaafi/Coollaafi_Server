@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,7 +34,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://coollaafi.shop"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
         corsConfiguration.setAllowCredentials(true);
@@ -48,11 +49,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/member/healthcheck",
-                                "/login/**", "/oauth2/**", "/test", "/swagger-ui/**",
-                                "/v3/api-docs/**", "/swagger-resources/**", "/kakao/logout/withAccount",
-                                "/v3/api-docs", "/kakao", "/logout", "/auth/refresh") // 인증 없이 접근 가능하도록 설정된 URL들
+                                "/member/healthcheck", "/login/**", "/oauth2/**", "/test",
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+                                "/kakao/logout/withAccount", "/kakao", "/logout",
+                                "/auth/refresh") // 인증 없이 접근 가능하도록 설정된 URL들
                         .permitAll()
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )

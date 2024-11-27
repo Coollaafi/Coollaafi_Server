@@ -11,16 +11,16 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Friendship extends BaseEntity {
+public class Follow extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member1_id")
-    private Member member1;
+    @JoinColumn(name = "follower_id", nullable = false)
+    private Member follower;
 
     @ManyToOne
-    @JoinColumn(name = "member2_id")
-    private Member member2;
+    @JoinColumn(name = "followee_id", nullable = false)
+    private Member followee;
 }

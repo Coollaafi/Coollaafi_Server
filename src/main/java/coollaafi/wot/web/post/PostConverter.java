@@ -46,10 +46,14 @@ public class PostConverter {
                 .lookbook_url(post.getLookbookImage())
                 .postCondition(post.getPostCondition())
                 .address(extractCityAndDistrict(post.getOotdImage().getAddress()))
+                .tmax(post.getOotdImage().getTmax())
+                .tmin(post.getOotdImage().getTmin())
+                .weather_description(post.getOotdImage().getWeather_description())
+                .weather_icon_url(post.getOotdImage().getWeather_icon())
                 .createdAt(post.getCreatedAt())
                 .preferCount(postPreferRepository.countByPost(post))
                 .commentCount(commentRepository.countCommentsByPost(post) + replyRepository.countRepliesByPost(post))
-                .isLikedByMember(postPreferRepository.existsByPostAndMember(post, member))
+                .isLikedByMember(postPreferRepository.existsByMemberAndPost(member, post))
                 .build();
     }
 
@@ -82,8 +86,10 @@ public class PostConverter {
         CalendarDTO calendarDTO = new CalendarDTO();
 
         for (Post post : posts) {
-            CalendarDTO.Day day = new CalendarDTO.Day(post.getCreatedAt().toLocalDate(), post.getLookbookImage(),
-                    post.getId());  // Day 객체 생성
+            CalendarDTO.Day day = new CalendarDTO.Day(
+                    post.getCreatedAt().toLocalDate(),
+                    post.getLookbookImage(),
+                    post.getId());
             calendarDTO.addDay(day);
         }
 

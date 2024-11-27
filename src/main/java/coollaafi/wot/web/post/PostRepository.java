@@ -23,9 +23,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                                                  @Param("oneWeekAgo") LocalDateTime oneWeekAgo,
                                                  @Param("cityAndDistrict") String cityAndDistrict);
 
-
-    @Query("SELECT p FROM Post p WHERE p.member.id = :memberId AND p.createdAt BETWEEN :startDate AND :endDate")
-    List<Post> findPostsByMemberAndDateRange(@Param("memberId") Long memberId,
-                                             @Param("startDate") LocalDateTime startDate,
-                                             @Param("endDate") LocalDateTime endDate);
+    List<Post> findPostsByMemberId(Long memberId);
 }

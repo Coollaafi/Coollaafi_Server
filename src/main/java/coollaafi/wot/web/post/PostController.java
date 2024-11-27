@@ -71,14 +71,12 @@ public class PostController {
     }
 
     @GetMapping("/calendar/{memberId}")
-    @Operation(summary = "홈화면 캘린더 조회 API", description = "캘린더 조회에 필요한 API입니다. year, month를 넣어주세요.")
+    @Operation(summary = "홈화면 캘린더 조회 API", description = "캘린더 조회에 필요한 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK, 성공"),
     })
-    public ApiResponse<CalendarDTO> getPost(@Valid @PathVariable("memberId") Long memberId,
-                                            @RequestParam("year") Integer year,
-                                            @RequestParam("month") Integer month) {
-        CalendarDTO responseDTO = postService.getCalendar(memberId, year, month);
+    public ApiResponse<CalendarDTO> getPost(@Valid @PathVariable("memberId") Long memberId) {
+        CalendarDTO responseDTO = postService.getCalendar(memberId);
         return ApiResponse.onSuccess(responseDTO);
     }
 }

@@ -73,6 +73,8 @@ dependencies {
     // 트랜잭션 처리
     implementation 'org.springframework:spring-tx'
 
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

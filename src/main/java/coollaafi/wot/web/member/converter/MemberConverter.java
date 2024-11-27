@@ -13,6 +13,7 @@ public class MemberConverter {
 
     public MemberDTO.MemberBasedDTO toMemberBasedDTO(Member member) {
         return MemberDTO.MemberBasedDTO.builder()
+                .memberId(member.getId())
                 .memberServiceId(member.getServiceId())
                 .memberNickName(member.getNickname())
                 .memberImage(member.getProfileimage())
@@ -25,6 +26,7 @@ public class MemberConverter {
                 .nextAlias(member.getAlias().getNextAlias())
                 .photosUntilNextAlias(
                         member.getAlias().getPhotosForNext() - ootdImageRepository.countPhotoByMember(member))
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 

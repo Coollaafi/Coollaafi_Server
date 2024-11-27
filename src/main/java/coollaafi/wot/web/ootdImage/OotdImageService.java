@@ -4,13 +4,13 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.ai.AIService;
 import coollaafi.wot.web.collageImage.CollageImageService;
-import coollaafi.wot.web.weatherData.WeatherData;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
 import coollaafi.wot.web.member.service.MemberService;
 import coollaafi.wot.web.ootdImage.OotdImageResponseDTO.MetadataDTO;
 import coollaafi.wot.web.post.Category;
+import coollaafi.wot.web.weatherData.WeatherData;
 import coollaafi.wot.web.weatherData.WeatherDataService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -35,7 +35,8 @@ public class OotdImageService {
     private final WeatherDataService weatherDataService;
 
     @Transactional
-    public OotdImageResponseDTO.uploadOOTD segmentImage(Long memberId, MultipartFile ootdImage, Set<Category> categorySet) throws Exception {
+    public OotdImageResponseDTO.uploadOOTD segmentImage(Long memberId, MultipartFile ootdImage,
+                                                        Set<Category> categorySet) throws Exception {
         Member member = getMemberById(memberId);
         validateImage(ootdImage);
 
@@ -45,7 +46,8 @@ public class OotdImageService {
         String aiUrlsResponse = aiService.callSegmentApi(ootdImage, categorySet);
         log.info("Segment API Response: {}", aiUrlsResponse);
 
-        String weatherApiResponse = aiService.callAddWeatherApi(metadata.getDate(), metadata.getLatitude(), metadata.getLongitude());
+        String weatherApiResponse = aiService.callAddWeatherApi(metadata.getDate(), metadata.getLatitude(),
+                metadata.getLongitude());
         log.info("Add Weather API Response: {}", weatherApiResponse);
 
         List<String> collageImagesUrl = aiService.parseApiResponse(aiUrlsResponse);
@@ -53,12 +55,12 @@ public class OotdImageService {
 
         // 트랜잭션 분리 후 조회
         WeatherData weatherData = weatherDataService.fetchWeatherDataById(weatherDataId);
-        saveOotdImage(member, weatherData, ootdImageUrl, metadata);
+        OotdImage savedootdImage = saveOotdImage(member, weatherData, ootdImageUrl, metadata);
 
         for (String url : collageImagesUrl) {
             collageImageService.saveCollageImage(member, url, weatherData);
         }
-        return new OotdImageResponseDTO.uploadOOTD(ootdImageUrl, collageImagesUrl);
+        return new OotdImageResponseDTO.uploadOOTD(savedootdImage.getId(), collageImagesUrl);
     }
 
     private Member getMemberById(Long memberId) {
@@ -95,6 +97,8 @@ public class OotdImageService {
                 .member(member)
                 .tmin(weatherData.getTmin())
                 .tmax(weatherData.getTmax())
+                .weather_description(metadata.getDescription())
+                .weather_icon(metadata.getImageUrl())
                 .address(metadata.getAddress())
                 .date(metadata.getDate())
                 .build();

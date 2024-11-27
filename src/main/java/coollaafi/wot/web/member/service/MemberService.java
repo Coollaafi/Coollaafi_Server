@@ -39,8 +39,7 @@ public class MemberService {
             // 프로필 이미지 업로드
             String profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
             member.setProfileimage(profileImageUrl);
-        }
-        else {
+        } else {
             member.setProfileimage(null);
         }
 
@@ -60,8 +59,11 @@ public class MemberService {
 
         String profileImageUrl = null;
 
+        if (member.getProfileimage() != null) {
+            amazonS3Manager.deleteFile(member.getProfileimage());
+        }
+
         if (profileImage != null && !profileImage.isEmpty()) {
-//            amazonS3Manager.deleteFile(member.getProfileimage());
             profileImageUrl = amazonS3Manager.uploadFile("profile/", profileImage, member.getKakaoId());
         }
 
@@ -70,6 +72,19 @@ public class MemberService {
 
         return profileImageUrl;
     }
+
+    @Transactional
+    public void editNicknameAndId(MemberDTO.joinMemberDTO joinMemberDTO) {
+        Member member = memberRepository.findById(joinMemberDTO.getMemberId())
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 멤버 정보 업데이트
+        member.setServiceId(joinMemberDTO.getServiceId());
+        member.setNickname(joinMemberDTO.getNickname());
+
+        memberRepository.save(member);
+    }
+
 
     @Transactional
     public boolean isServiceIdDuplicate(String serviceId) {
@@ -85,7 +100,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Void setAlias(Member member) {
+    public void setAlias(Member member) {
         Long imageCount = ootdImageRepository.countPhotoByMember(member);
 
         // 이미지 개수를 기준으로 Alias를 가져옴
@@ -95,22 +110,12 @@ public class MemberService {
         member.setAlias(alias);
 
         memberRepository.save(member);
-        return null;
     }
 
     @Transactional
     public List<MemberDTO.MemberBasedDTO> searchMembers(String searchTerm) {
         List<Member> searchMembers = memberRepository.findByNicknameOrUserIdStartsWith(searchTerm);
         return searchMembers.stream()
-                .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
-    }
-
-    // 특정 멤버의 친구 목록을 조회
-    @Transactional
-    public List<MemberDTO.MemberBasedDTO> getFriends(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        return member.getFriends().stream()
                 .map(memberConverter::toMemberBasedDTO).collect(Collectors.toList());
     }
 }

@@ -53,3 +53,6 @@ cloud:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_SECRET_KEY}
 
+external-api:
+  weather-api:
+    key: ${WEATHER_API_KEY}

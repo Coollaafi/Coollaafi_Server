@@ -19,6 +19,8 @@ public class OotdImageResponseDTO {
         private LocalDateTime date;
         private Double latitude;
         private Double longitude;
+        private String description;
+        private String imageUrl;
     }
 
     @Builder
@@ -27,7 +29,7 @@ public class OotdImageResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class uploadOOTD {
-        private String ootdImage;
+        private Long ootdImageId;
         private List<String> collageImages;
     }
 }

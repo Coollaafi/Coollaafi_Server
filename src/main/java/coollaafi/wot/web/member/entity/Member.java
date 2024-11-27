@@ -3,8 +3,7 @@ package coollaafi.wot.web.member.entity;
 import coollaafi.wot.common.BaseEntity;
 import coollaafi.wot.web.collageImage.CollageImage;
 import coollaafi.wot.web.comment.Comment;
-import coollaafi.wot.web.friendRequest.FriendRequest;
-import coollaafi.wot.web.friendship.Friendship;
+import coollaafi.wot.web.friendship.Follow;
 import coollaafi.wot.web.ootdImage.OotdImage;
 import coollaafi.wot.web.post.Post;
 import coollaafi.wot.web.postPrefer.PostPrefer;
@@ -18,9 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,17 +62,11 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<PostPrefer> postPrefers;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<FriendRequest> sendRequests;
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL)
+    private List<Follow> follow1;
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    private List<FriendRequest> receivedRequests;
-
-    @OneToMany(mappedBy = "member1", cascade = CascadeType.ALL)
-    private List<Friendship> friendships1;
-
-    @OneToMany(mappedBy = "member2", cascade = CascadeType.ALL)
-    private List<Friendship> friendships2;
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL)
+    private List<Follow> follow2;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<CollageImage> collageImages;
@@ -90,12 +80,5 @@ public class Member extends BaseEntity {
         if (this.alias == null) {
             this.alias = Alias.COMMON; // 기본 별명 설정
         }
-    }
-
-    public Set<Member> getFriends() {
-        return Stream.concat(
-                friendships1.stream().map(Friendship::getMember2),
-                friendships2.stream().map(Friendship::getMember1)
-        ).collect(Collectors.toSet());
     }
 }

@@ -1,5 +1,6 @@
 package coollaafi.wot.web.member;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ public class MemberDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberBasedDTO {
+        private Long memberId;
         private String memberServiceId;
         private String memberNickName;
         private String memberImage;
@@ -24,6 +26,7 @@ public class MemberDTO {
     public static class MemberAddDTO {
         private String nextAlias;
         private Long photosUntilNextAlias;
+        private LocalDateTime createdAt;
     }
 
     @Builder

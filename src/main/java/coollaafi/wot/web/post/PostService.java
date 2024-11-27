@@ -4,7 +4,7 @@ import coollaafi.wot.apiPayload.code.status.ErrorStatus;
 import coollaafi.wot.s3.AmazonS3Manager;
 import coollaafi.wot.web.comment.CommentResponseDTO;
 import coollaafi.wot.web.comment.CommentService;
-import coollaafi.wot.web.friendship.FriendshipRepository;
+import coollaafi.wot.web.friendship.FollowRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -14,9 +14,7 @@ import coollaafi.wot.web.ootdImage.OotdImageHandler;
 import coollaafi.wot.web.ootdImage.OotdImageRepository;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostConverter postConverter;
     private final MemberRepository memberRepository;
-    private final FriendshipRepository friendshipRepository;
+    private final FollowRepository followRepository;
     private final CommentService commentService;
     private final MemberService memberService;
     private final AmazonS3Manager amazonS3Manager;
@@ -43,7 +41,7 @@ public class PostService {
         OotdImage ootdImage = ootdImageRepository.findById(requestDTO.getOotdImageId())
                 .orElseThrow(() -> new OotdImageHandler(ErrorStatus.OOTD_NOT_FOUND));
 
-        String lookbookUrl = amazonS3Manager.uploadFile("/lookbook", lookbookImage, member.getKakaoId());
+        String lookbookUrl = amazonS3Manager.uploadFile("lookbook/", lookbookImage, member.getKakaoId());
 
         Post post = postConverter.toEntity(requestDTO, member, ootdImage, lookbookUrl);
         postRepository.save(post);
@@ -56,7 +54,7 @@ public class PostService {
         // 멤버를 찾고, 친구 목록을 가져오기
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler((ErrorStatus.MEMBER_NOT_FOUND)));
-        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
+        List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
 
         // 현재 시점에서 일주일 전 시간
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
@@ -72,7 +70,7 @@ public class PostService {
         // 멤버와 친구 목록 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        List<Member> friends = friendshipRepository.findFriendsOfMember(member);
+        List<Member> friends = followRepository.findFolloweesByMemberId(memberId);
 
         // 현재 시점에서 일주일 전 시간
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
@@ -98,25 +96,9 @@ public class PostService {
     }
 
     @Transactional
-    public CalendarDTO getCalendar(Long memberId, Integer year, Integer month) {
-        // 1. year와 month가 null일 경우 현재 날짜 기준으로 설정
-        LocalDate currentDate = LocalDate.now();
-        year = year == null ? currentDate.getYear() : year;
-        month = month == null ? currentDate.getMonthValue() : month;
+    public CalendarDTO getCalendar(Long memberId) {
+        List<Post> posts = postRepository.findPostsByMemberId(memberId);
 
-        // 2. 해당 연도/월의 첫날과 마지막 날 계산
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate startDate = yearMonth.atDay(1);
-        LocalDate endDate = yearMonth.atEndOfMonth();
-
-        // 3. LocalDate -> LocalDateTime 변환
-        LocalDateTime startDateTime = startDate.atStartOfDay(); // 00:00:00
-        LocalDateTime endDateTime = endDate.atTime(23, 59, 59); // 23:59:59
-
-        // 4. memberId로 해당 기간에 해당하는 게시물 조회
-        List<Post> posts = postRepository.findPostsByMemberAndDateRange(memberId, startDateTime, endDateTime);
-
-        // 5. 캘린더를 생성하여 반환
         return postConverter.createCalendarDTO(posts);
     }
 }
