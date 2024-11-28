@@ -34,7 +34,7 @@ public class AIService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
     //    @Value("${external-api.ai-api.url}")
-    private final String baseUrl = "http://44.195.120.206:8000/";
+    private final String baseUrl = "http://44.195.120.206:8000";
 
     @Transactional
     public String callSegmentApi(MultipartFile image, Set<Category> categorySet) throws Exception {
