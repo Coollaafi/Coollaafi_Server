@@ -1,8 +1,6 @@
 package coollaafi.wot.web.friendRequest;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
-import coollaafi.wot.web.friendship.FriendshipConverter;
-import coollaafi.wot.web.friendship.FriendshipRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -18,8 +16,6 @@ public class FriendRequestService {
     private final MemberRepository memberRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendRequestConverter friendRequestConverter;
-    private final FriendshipConverter friendshipConverter;
-    private final FriendshipRepository friendshipRepository;
 
     @Transactional
     public FriendRequestDTO.responseDTO sendFriendRequest(Long senderId, Long receiverId) {
