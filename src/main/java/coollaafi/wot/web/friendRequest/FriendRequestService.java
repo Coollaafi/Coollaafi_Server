@@ -1,7 +1,8 @@
 package coollaafi.wot.web.friendRequest;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
-import coollaafi.wot.web.friendRequest.FriendRequest.RequestStatus;
+import coollaafi.wot.web.friendship.FriendshipConverter;
+import coollaafi.wot.web.friendship.FriendshipRepository;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -17,6 +18,8 @@ public class FriendRequestService {
     private final MemberRepository memberRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final FriendRequestConverter friendRequestConverter;
+    private final FriendshipConverter friendshipConverter;
+    private final FriendshipRepository friendshipRepository;
 
     @Transactional
     public FriendRequestDTO.responseDTO sendFriendRequest(Long senderId, Long receiverId) {
@@ -34,14 +37,21 @@ public class FriendRequestService {
         return friendRequestConverter.toResult(friendRequest);
     }
 
+
     @Transactional
-    public void cancelFriendRequest(Long friendRequestId) {
-        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
-                .orElseThrow(() -> new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_NOT_FOUND));
-        if (friendRequest.getStatus() != RequestStatus.PENDING) {
-            throw new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_ALREADY_PROCESSED);
+    public FriendRequest preFriendRequest(Long senderId, Long receiverId) {
+        Member sender = memberRepository.findById(senderId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.SENDER_NOT_FOUND));
+        Member receiver = memberRepository.findById(receiverId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.RECEIVER_NOT_FOUND));
+
+        FriendRequest request = friendRequestRepository.findBySenderAndReceiver(sender, receiver);
+        if (request == null) {
+            throw new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_NOT_FOUND);
         }
-        friendRequestRepository.delete(friendRequest);
+
+        friendRequestRepository.delete(request);
+        return request;
     }
 
     @Transactional

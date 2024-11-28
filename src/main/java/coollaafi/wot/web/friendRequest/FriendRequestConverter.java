@@ -14,7 +14,6 @@ public class FriendRequestConverter {
         return FriendRequest.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .status(FriendRequest.RequestStatus.PENDING)
                 .build();
     }
 
@@ -28,7 +27,6 @@ public class FriendRequestConverter {
     public FriendRequestDTO.responseGetDTO toGetReceiverResult(FriendRequest friendRequest) {
         return FriendRequestDTO.responseGetDTO.builder()
                 .id(friendRequest.getId())
-                .status(friendRequest.getStatus())
                 .created_at(friendRequest.getCreatedAt())
                 .memberInfo(memberConverter.toMemberBasedDTO(friendRequest.getReceiver()))
                 .build();
@@ -37,7 +35,6 @@ public class FriendRequestConverter {
     public FriendRequestDTO.responseGetDTO toGetSenderResult(FriendRequest friendRequest) {
         return FriendRequestDTO.responseGetDTO.builder()
                 .id(friendRequest.getId())
-                .status(friendRequest.getStatus())
                 .created_at(friendRequest.getCreatedAt())
                 .memberInfo(memberConverter.toMemberBasedDTO(friendRequest.getSender()))
                 .build();
