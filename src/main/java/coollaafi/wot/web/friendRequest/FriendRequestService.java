@@ -1,6 +1,7 @@
 package coollaafi.wot.web.friendRequest;
 
 import coollaafi.wot.apiPayload.code.status.ErrorStatus;
+import coollaafi.wot.web.friendRequest.FriendRequest.RequestStatus;
 import coollaafi.wot.web.member.entity.Member;
 import coollaafi.wot.web.member.handler.MemberHandler;
 import coollaafi.wot.web.member.repository.MemberRepository;
@@ -31,6 +32,16 @@ public class FriendRequestService {
         FriendRequest friendRequest = friendRequestConverter.toEntity(sender, receiver);
         friendRequestRepository.save(friendRequest);
         return friendRequestConverter.toResult(friendRequest);
+    }
+
+    @Transactional
+    public void cancelFriendRequest(Long friendRequestId) {
+        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
+                .orElseThrow(() -> new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_NOT_FOUND));
+        if (friendRequest.getStatus() != RequestStatus.PENDING) {
+            throw new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_ALREADY_PROCESSED);
+        }
+        friendRequestRepository.delete(friendRequest);
     }
 
     @Transactional

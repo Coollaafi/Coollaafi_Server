@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,13 @@ public class FriendshipController {
     })
     public ApiResponse<Void> rejectFriendRequest(@Parameter @PathVariable("friendRequestId") Long friendRequestId) {
         friendshipService.rejectFriendRequest(friendRequestId);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/delete")
+    public ApiResponse<Void> deleteFriend(@RequestParam("memberId1") Long memberId1,
+                                          @RequestParam("memberId2") Long memberId2) {
+        friendshipService.deleteFriend(memberId1, memberId2);
         return ApiResponse.onSuccess(null);
     }
 }
