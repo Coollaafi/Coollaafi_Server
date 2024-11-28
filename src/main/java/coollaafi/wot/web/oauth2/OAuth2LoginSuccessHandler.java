@@ -28,8 +28,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         Long memberId = customUser.getMemberId();
 
         // 프론트엔드 URL로 리다이렉트할 때 임시로 필요한 정보 전달
-//        String FRONTEND_URL = "https://coollaafi-frontend.vercel.app";
-        String FRONTEND_URL = "http://localhost:3000";
+        String FRONTEND_URL = "https://coollaafi-frontend.vercel.app";
+//        String FRONTEND_URL = "http://localhost:3000";
         String frontendRedirectUrl = String.format(
                 "%s/login/success?accessToken=%s&refreshToken=%s&isMembershipRequired=%b&memberId=%d",
                 FRONTEND_URL, accessToken, refreshToken, isMembershipRequired, memberId);
