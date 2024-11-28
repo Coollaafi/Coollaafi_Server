@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -34,8 +33,8 @@ public class AIService {
     private static final double DEFAULT_LON = 126.9780; // 서울
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Value("${external-api.ai-api.url}")
-    private String baseUrl;
+    //    @Value("${external-api.ai-api.url}")
+    private final String baseUrl = "http://44.195.120.206:8000/";
 
     @Transactional
     public String callSegmentApi(MultipartFile image, Set<Category> categorySet) throws Exception {
@@ -64,7 +63,60 @@ public class AIService {
                 .queryParam("longitude", longitude)
                 .toUriString();
 
+        try {
+            String response = makePostRequest(apiUrl);
+            validateWeatherApiResponse(response); // 응답에서 NaN 값 감지
+            return response;
+        } catch (RuntimeException e) {
+            if (shouldRetryWithSeoul(e)) {
+                log.warn("Weather API call failed. Retrying with Seoul coordinates...");
+                return retryWithSeoulCoordinates(date);
+            }
+            throw e; // 다른 에러는 재시도하지 않음
+        }
+    }
+
+    public String retryWithSeoulCoordinates(LocalDateTime date) {
+        String formattedDate = formatDate(date);
+
+        String apiUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("/add_weather")
+                .queryParam("date", formattedDate)
+                .queryParam("latitude", 37.5665) // 서울 위도
+                .queryParam("longitude", 126.9780) // 서울 경도
+                .toUriString();
+
         return makePostRequest(apiUrl);
+    }
+
+    private boolean shouldRetryWithSeoul(RuntimeException e) {
+        String errorMessage = e.getMessage();
+        return errorMessage != null && errorMessage.contains("nan can not be used with MySQL");
+    }
+
+    private void validateWeatherApiResponse(String response) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(response);
+
+            // 검증할 필드 리스트
+            String[] fieldsToValidate = {"prcp", "tavg", "tmin", "tmax", "wdir", "wspd", "pres"};
+
+            for (String field : fieldsToValidate) {
+                if (rootNode.has(field) && rootNode.get(field).isNumber()) {
+                    double value = rootNode.get(field).asDouble();
+                    if (Double.isNaN(value) || Double.isInfinite(value)) {
+                        throw new RuntimeException(
+                                String.format("Weather data contains invalid value for field: %s", field));
+                    }
+                } else if (rootNode.has(field) && rootNode.get(field).isNull()) {
+                    throw new RuntimeException(String.format("Weather data contains null value for field: %s", field));
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Error validating weather API response: {}", response, e);
+            throw new RuntimeException("Invalid weather API response", e);
+        }
     }
 
     @Transactional
@@ -102,16 +154,6 @@ public class AIService {
                 .queryParam("lat", lat)
                 .queryParam("lon", lon)
                 .toUriString();
-    }
-
-    private String extractErrorDetail(String errorMessage) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(errorMessage);
-            return rootNode.get("detail").asText();
-        } catch (Exception e) {
-            log.warn("Failed to parse error message: {}", errorMessage);
-            return errorMessage; // 파싱 실패 시 원본 메시지를 반환
-        }
     }
 
     private String retryWithDefaultCoordinates(Long memberId, String date) {

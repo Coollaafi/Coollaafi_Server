@@ -46,8 +46,14 @@ public class OotdImageService {
         String aiUrlsResponse = aiService.callSegmentApi(ootdImage, categorySet);
         log.info("Segment API Response: {}", aiUrlsResponse);
 
-        String weatherApiResponse = aiService.callAddWeatherApi(metadata.getDate(), metadata.getLatitude(),
-                metadata.getLongitude());
+        String weatherApiResponse;
+        try {
+            weatherApiResponse = aiService.callAddWeatherApi(metadata.getDate(), metadata.getLatitude(),
+                    metadata.getLongitude());
+        } catch (RuntimeException e) {
+            log.warn("Weather API call failed. Retrying with Seoul coordinates...");
+            weatherApiResponse = aiService.retryWithSeoulCoordinates(metadata.getDate());
+        }
         log.info("Add Weather API Response: {}", weatherApiResponse);
 
         List<String> collageImagesUrl = aiService.parseApiResponse(aiUrlsResponse);
@@ -75,7 +81,7 @@ public class OotdImageService {
         }
     }
 
-    private MetadataDTO extractMetadata(MultipartFile ootdImage) throws Exception {
+    private MetadataDTO extractMetadata(MultipartFile ootdImage) {
         log.info("Extracting metadata from image...");
         MetadataDTO metadata = metadataExtractor.extract(ootdImage);
         if (metadata == null) {
