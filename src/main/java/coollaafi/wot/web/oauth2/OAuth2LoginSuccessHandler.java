@@ -1,5 +1,6 @@
 package coollaafi.wot.web.oauth2;
 
+import coollaafi.wot.config.FrontendConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,6 +16,11 @@ import org.springframework.stereotype.Component;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     // RedirectStrategy 객체를 직접 생성
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final FrontendConfig frontendConfig;
+
+    public OAuth2LoginSuccessHandler(FrontendConfig frontendConfig) {
+        this.frontendConfig = frontendConfig;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -28,11 +34,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         Long memberId = customUser.getMemberId();
 
         // 프론트엔드 URL로 리다이렉트할 때 임시로 필요한 정보 전달
-//        String FRONTEND_URL = "https://coollaafi-frontend.vercel.app";
-        String FRONTEND_URL = "http://localhost:3000";
         String frontendRedirectUrl = String.format(
                 "%s/login/success?accessToken=%s&refreshToken=%s&isMembershipRequired=%b&memberId=%d",
-                FRONTEND_URL, accessToken, refreshToken, isMembershipRequired, memberId);
+                frontendConfig.getFrontendBaseUrl(), accessToken, refreshToken, isMembershipRequired, memberId);
 
         log.info("Redirecting to: {}", frontendRedirectUrl);
 

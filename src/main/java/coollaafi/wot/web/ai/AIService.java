@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,8 +34,9 @@ public class AIService {
     private static final double DEFAULT_LON = 126.9780; // 서울
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    //    @Value("${external-api.ai-api.url}")
-    private final String baseUrl = "http://44.195.120.206:8000";
+
+    @Value("${fast-api.base-url}")
+    private String baseUrl;
 
     @Transactional
     public String callSegmentApi(MultipartFile image, Set<Category> categorySet) throws Exception {

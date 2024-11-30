@@ -26,12 +26,15 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtTokenProvider jwtTokenProvider; // JWT 토큰 제공자 추가
     private final KakaoLogoutHandler kakaoLogoutHandler;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtTokenProvider jwtTokenProvider,
-                          KakaoLogoutHandler kakaoLogoutHandler) {
+                          KakaoLogoutHandler kakaoLogoutHandler,
+                          OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.kakaoLogoutHandler = kakaoLogoutHandler;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
     }
 
     @Bean
@@ -64,7 +67,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // 그 외의 모든 URL은 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(new OAuth2LoginSuccessHandler()) // 성공 시 커스텀 핸들러
+                        .successHandler(oAuth2LoginSuccessHandler) // 성공 시 커스텀 핸들러
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService) // OAuth2 사용자 서비스 설정
                         )
@@ -78,10 +81,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 로그아웃 URL
-                        .logoutSuccessUrl("http://localhost:3000/") // 로그아웃 성공 후 이동할 URL
                         .addLogoutHandler(kakaoLogoutHandler) // Kakao 로그아웃 처리 추가
                         .deleteCookies("JSESSIONID") // 세션 쿠키 삭제
                         .invalidateHttpSession(true) // 세션 무효화
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"Logout successful\"}");
+                        })
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화

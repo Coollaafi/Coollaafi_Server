@@ -54,7 +54,11 @@ cloud:
       secretKey: ${S3_SECRET_KEY}
 
 external-api:
-  ai-api:
-    url: ${AI_URL}
   weather-api:
     key: ${WEATHER_API_KEY}
+
+frontend:
+  base-url: ${FRONTEND_URL}
+
+fast-api:
+  base-url: ${AI_URL}
