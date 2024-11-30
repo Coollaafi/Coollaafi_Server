@@ -3,6 +3,7 @@ package coollaafi.wot.config;
 import coollaafi.wot.jwt.JwtTokenFilter;
 import coollaafi.wot.jwt.JwtTokenProvider;
 import coollaafi.wot.web.oauth2.CustomOAuth2UserService;
+import coollaafi.wot.web.oauth2.KakaoLogoutHandler;
 import coollaafi.wot.web.oauth2.OAuth2LoginSuccessHandler;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -24,10 +25,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtTokenProvider jwtTokenProvider; // JWT 토큰 제공자 추가
+    private final KakaoLogoutHandler kakaoLogoutHandler;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, JwtTokenProvider jwtTokenProvider,
+                          KakaoLogoutHandler kakaoLogoutHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.kakaoLogoutHandler = kakaoLogoutHandler;
     }
 
     @Bean
@@ -74,7 +78,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 로그아웃 URL
-                        .logoutSuccessUrl("/") // 로그아웃 성공 시 이동할 URL
+                        .logoutSuccessUrl("http://localhost:3000/") // 로그아웃 성공 후 이동할 URL
+                        .addLogoutHandler(kakaoLogoutHandler) // Kakao 로그아웃 처리 추가
                         .deleteCookies("JSESSIONID") // 세션 쿠키 삭제
                         .invalidateHttpSession(true) // 세션 무효화
                 )
