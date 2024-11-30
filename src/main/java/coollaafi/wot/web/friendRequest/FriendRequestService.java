@@ -46,6 +46,11 @@ public class FriendRequestService {
             throw new FriendRequestHandler(ErrorStatus.FRIEND_REQUEST_NOT_FOUND);
         }
 
+        FriendRequest request1 = friendRequestRepository.findBySenderAndReceiver(receiver, sender);
+        if (request1 != null) {
+            friendRequestRepository.delete(request1);
+        }
+
         friendRequestRepository.delete(request);
         return request;
     }
